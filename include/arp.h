@@ -1,17 +1,30 @@
 #include "ethernet.h"
 #include "ip.h"
+#include <netinet/if_ether.h>
+#include <net/if_arp.h>
 
-#define ARP_REQUEST 1
-#define ARP_REPLY 2
-#define ARP_RARP_REQUEST 3
-#define ARP_RARP_REPLY 4
-#define ARP_InARP_REQUEST 8
-#define ARP_InARP_REPLY 9
+
 
 
 
 /**
- * @brief 
+ * @brief Affiche le type de protocole ARP.
+ * 
+ * @param opcode
+ */
+void print_arp_opcode(int opcode);
+
+
+/**
+ * @brief Affiche les informations de la couche ARP
+ * 
+ * @param packet 
+ */
+void print_verb_one(const unsigned char * packet);
+
+
+/**
+ * @brief Affiche les informations de la couche ARP.
  * 
  * @param packet 
  * @param verbose 

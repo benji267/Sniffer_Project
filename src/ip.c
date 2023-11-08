@@ -35,9 +35,9 @@ void print_flags(u_int16_t flags){
 
 
 void print_ipv4(int verbose, struct iphdr *ip,u_int16_t flags){
-    printf("IPV4\n");
-    printf("Source: %s\n", inet_ntoa(*(struct in_addr*)&ip->saddr));
-    printf("Destination: %s\n", inet_ntoa(*(struct in_addr*)&ip->daddr));
+    printf("IPV4: ");
+    printf("Source: %s -> ", inet_ntoa(*(struct in_addr*)&ip->saddr));
+    printf("Destination: %s, ", inet_ntoa(*(struct in_addr*)&ip->daddr));
     printf("Following Protocol: ");
     print_protocol_ip(ip->protocol);
     printf("\n");
@@ -63,12 +63,12 @@ void print_ipv4(int verbose, struct iphdr *ip,u_int16_t flags){
 
 
 void print_ipv6(int verbose, struct ip6_hdr *ipv6){
-    printf("IPV6\n");
+    printf("IPV6: ");
     char str[INET6_ADDRSTRLEN];
     inet_ntop(AF_INET6, &(ipv6->ip6_src), str, INET6_ADDRSTRLEN);
-    printf("Source: %s\n", str);
+    printf("Source: %s ->", str);
     inet_ntop(AF_INET6, &(ipv6->ip6_dst), str, INET6_ADDRSTRLEN);
-    printf("Destination: %s\n", str);
+    printf("Destination: %s, ", str);
     printf("Following Protocol: ");
     print_protocol_ip(ipv6->ip6_nxt);
     printf("\n");

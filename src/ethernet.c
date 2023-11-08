@@ -4,16 +4,16 @@
 void print_type_ethernet(int type){
     switch(type){
         case ETHERTYPE_IPV4_Custom:
-            printf("IP\n");
+            printf("IPV4 ");
             break;
         case ETHERTYPE_IPV6_Custom:
-            printf("IP\n");
+            printf("IPV6 ");
             break;
         case ETHERTYPE_ARP_Custom:
-            printf("ARP\n");
+            printf("ARP ");
             break;
         default:
-            printf("Unknown\n");
+            printf("Unknown ");
             break;
     }
 }
@@ -21,8 +21,8 @@ void print_type_ethernet(int type){
 int ethernet(const unsigned char *packet, int verbose){
     struct ether_header *ethernet;
     ethernet = (struct ether_header *) packet;
-    printf("Protocole Ethernet: \n");
-    printf("Adresse MAC Source: %02x:%02x:%02x:%02x:%02x:%02x\n", 
+    printf("Protocole Ethernet: ");
+    printf("Adresse MAC Source: %02x:%02x:%02x:%02x:%02x:%02x -> ", 
         ethernet->ether_shost[0], ethernet->ether_shost[1], 
         ethernet->ether_shost[2], ethernet->ether_shost[3], 
         ethernet->ether_shost[4], ethernet->ether_shost[5]);
