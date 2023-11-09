@@ -1,6 +1,7 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "if_arp.h": "c"
+        "if_arp.h": "c",
+        "ethernet.h": "c"
     }
 }

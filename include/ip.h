@@ -1,5 +1,6 @@
 #include "ethernet.h"
 #include <netinet/ip6.h>
+#include <netinet/ip.h>
 #define ICMPV4 1
 #define ICMPV6 58
 #define TCP 6
@@ -10,8 +11,6 @@
  * 
  * @param protocol 
  */
-
-
 void print_protocol_ip(int protocol);
 
 

@@ -5,10 +5,13 @@
 void print_protocol_ip(int protocol){
     switch(protocol){
         case IPPROTO_ICMP:
-            printf("ICMP\n");
+            printf("ICMPV4\n");
+            break;
+        case IPPROTO_ICMPV6:
+            printf("ICMPV6\n");
             break;
         case IPPROTO_TCP:
-            printf("TCP\n");
+            printf("TCPV4\n");
             break;
         case IPPROTO_UDP:
             printf("UDP\n");
@@ -35,7 +38,7 @@ void print_flags(u_int16_t flags){
 
 
 void print_ipv4(int verbose, struct iphdr *ip,u_int16_t flags){
-    printf("IPV4: ");
+    printf("IPV4: \n");
     printf("Source: %s -> ", inet_ntoa(*(struct in_addr*)&ip->saddr));
     printf("Destination: %s, ", inet_ntoa(*(struct in_addr*)&ip->daddr));
     printf("Following Protocol: ");
@@ -63,7 +66,7 @@ void print_ipv4(int verbose, struct iphdr *ip,u_int16_t flags){
 
 
 void print_ipv6(int verbose, struct ip6_hdr *ipv6){
-    printf("IPV6: ");
+    printf("IPV6: \n");
     char str[INET6_ADDRSTRLEN];
     inet_ntop(AF_INET6, &(ipv6->ip6_src), str, INET6_ADDRSTRLEN);
     printf("Source: %s ->", str);
@@ -93,7 +96,7 @@ int ip(const unsigned char* packet, int verbose){
 
    uint16_t version = (packet[12] << 8) | packet[13];
    int next_protocol = 0;
-    printf("Protocole IP:\n"); 
+    printf("Protocole IP: "); 
     switch(version){
         case 0x0800:
             struct iphdr *ipv4 = (struct iphdr*)(packet + sizeof(struct ether_header));

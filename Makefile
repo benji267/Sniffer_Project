@@ -14,7 +14,7 @@ OBJ_DIR = obj
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
 
 # Exécutable
-EXECUTABLE = analyseur
+EXECUTABLE = sniffer
 
 # Fichiers header
 INC_DIR = include

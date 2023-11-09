@@ -1,6 +1,7 @@
 #include "ethernet.h"
 #include "ip.h"
 #include "arp.h"
+#include "icmp.h"
 
 
 int main(int argc, char* argv[]){
@@ -43,11 +44,24 @@ int main(int argc, char* argv[]){
     while((packet = pcap_next(handle, &header))){
        
         switch(ethernet(packet, verbosity)){
+            int following_protocol;
            case ETHERTYPE_IPV4_Custom:
-                ip(packet, verbosity);
+                following_protocol = ip(packet, verbosity);
+                switch(following_protocol){
+                    case IPPROTO_ICMP:
+                        icmp(packet, verbosity,4);
+                    default:
+                        break;
+                }
                 break;
             case ETHERTYPE_IPV6_Custom:
-                ip(packet, verbosity);
+                following_protocol=ip(packet, verbosity);
+                switch(following_protocol){
+                    case IPPROTO_ICMPV6:
+                        icmp(packet, verbosity,6);
+                    default:
+                        break;
+                }
                 break;
            case ETHERTYPE_ARP_Custom:
                 arp(packet, verbosity);
