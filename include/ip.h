@@ -1,10 +1,7 @@
 #include "ethernet.h"
 #include <netinet/ip6.h>
 #include <netinet/ip.h>
-#define ICMPV4 1
-#define ICMPV6 58
-#define TCP 6
-#define UDP 17
+
 
 /**
  * @brief fonction qui permet d'afficher le protocole IP.

@@ -43,7 +43,6 @@ void print_icmpv6(const unsigned char* packet, struct icmp6_hdr *icmp6_header, i
  * 
  * @param packet 
  * @param verbose 
- * @param type 
- * @return int 
+ * @param type  
  */
-int icmp(const unsigned char* packet, int verbose, int type);
+void icmp(const unsigned char* packet, int verbose, int type);

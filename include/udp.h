@@ -4,6 +4,14 @@
 #include <netinet/udp.h>
 
 
+/**
+ * @brief Display UDPV4 header.
+ * 
+ * @param packet
+ * @param verbose
+ * @param udp_header
+ */
+void print_udpv4(const unsigned char* packet, int verbose, const struct udphdr *udp_header);
 
 
 /**
@@ -11,7 +19,6 @@
  * 
  * @param packet 
  * @param verbose 
- * @param udp_header 
+ * @param type 
  */
-
-void print_udp(const unsigned char* packet, int verbose, struct udphdr *udp_header);
+void udp(const unsigned char* packet, int verbose, int type);
