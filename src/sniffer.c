@@ -3,6 +3,7 @@
 #include "arp.h"
 #include "icmp.h"
 #include "udp.h"
+#include "tcp.h"
 
 
 int main(int argc, char* argv[]){
@@ -55,6 +56,9 @@ int main(int argc, char* argv[]){
                     case IPPROTO_UDP:
                         udp(packet, verbosity,4);
                         break;
+                    case IPPROTO_TCP:
+                        tcp(packet, verbosity,4);
+                        break;
                     default:
                         break;
                 }
@@ -67,6 +71,9 @@ int main(int argc, char* argv[]){
                         break;
                     case IPPROTO_UDP:
                         udp(packet, verbosity,6);
+                        break;
+                    case IPPROTO_TCP:
+                        tcp(packet, verbosity,6);
                         break;
                     default:
                         break;

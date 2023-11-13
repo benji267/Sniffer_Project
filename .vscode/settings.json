@@ -2,6 +2,8 @@
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
         "if_arp.h": "c",
-        "ethernet.h": "c"
+        "ethernet.h": "c",
+        "udp.h": "c",
+        "getopt.h": "c"
     }
 }
