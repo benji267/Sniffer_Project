@@ -16,6 +16,9 @@ void print_protocol_ip(int protocol){
         case IPPROTO_UDP:
             printf("UDP\n");
             break;
+        case IPPROTO_SCTP:
+            printf("SCTP\n");
+            break;
         default:
             printf("Unknown\n");
             break;
