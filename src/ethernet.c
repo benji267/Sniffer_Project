@@ -41,7 +41,7 @@ int ethernet(const unsigned char *packet, int verbose){
 
     if(verbose>2){
         int header_length = sizeof(struct ether_header);
-        printf("Payload: ");
+        printf("\nPayload: ");
         int i;
         for(i=0;i<header_length;i++){
             printf("%02x ", packet[i]);

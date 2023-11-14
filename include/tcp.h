@@ -3,18 +3,32 @@
 #include "arp.h"
 #include <netinet/tcp.h>
 #include <netinet/ip.h>
-#include <getopt.h>
 
+
+#define LENMAXSEG 4
+#define LENWINDOW 3
+#define LEN_SACK_PERMITTED 2
+#define LEN_TIMESTAMP 10
 
 
 
 
 /**
- * @brief Print TCP option.
+ * @brief Print TCPV4 option.
  * 
  * @param packet
+ * @param offset
  */
-void print_option(const unsigned char *packet);
+void print_optionv4(const unsigned char *packet,uint8_t offset);
+
+
+/**
+ * @brief Print TCPV6 option.
+ * 
+ * @param packet
+ * @param offset
+ */
+void print_optionv6(const unsigned char *packet,uint8_t offset);
 
 
 /**
