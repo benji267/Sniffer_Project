@@ -37,10 +37,10 @@ void print_udpv4(const unsigned char* packet, int verbose, const struct udphdr *
 
     if(verbose>1){
         printf("Length: %d\n", ntohs(udp_header->len));
-        printf("Checksum: %x\n", ntohs(udp_header->check));
+        printf("Checksum: 0x%x\n", ntohs(udp_header->check));
 
         uint16_t calculated_checksum = calculate_udp_checksum(packet + sizeof(struct ether_header) + sizeof(struct iphdr), ntohs(udp_header->len));
-        printf("Calculated Checksum: %x\n", calculated_checksum);
+        printf("Calculated Checksum: 0x%x\n", calculated_checksum);
         printf("\n");
     }
     if(verbose>2){
@@ -60,7 +60,7 @@ void print_udpv6(const unsigned char* packet, int verbose, const struct udphdr *
 
     if(verbose>1){
         printf("Length: %d\n", ntohs(udp_header->len));
-        printf("Checksum: %x\n", ntohs(udp_header->check));
+        printf("Checksum: 0x%x\n", ntohs(udp_header->check));
 
         printf("\n");
     }

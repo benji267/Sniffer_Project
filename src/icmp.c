@@ -45,7 +45,7 @@ void print_icmpv4(const unsigned char* packet,struct icmphdr *icmp_header, int v
 
     if(verbose>1){
         printf("Code: %x\n", icmp_header->code);
-        printf("Checksum: %x\n", ntohs(icmp_header->checksum));
+        printf("Checksum: 0x%x\n", ntohs(icmp_header->checksum));
         printf("\n");
     }
     if(verbose>2){
@@ -74,7 +74,7 @@ void print_icmpv6(const unsigned char* packet,struct icmp6_hdr *icmp6_header, in
 
     if(verbose>1){
         printf("Code: %u\n", icmp6_header->icmp6_code);
-        printf("Checksum: %x\n", ntohs(icmp6_header->icmp6_cksum));
+        printf("Checksum: 0x%x\n", ntohs(icmp6_header->icmp6_cksum));
         printf("\n");
     }
     if(verbose>2){

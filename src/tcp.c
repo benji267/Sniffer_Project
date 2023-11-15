@@ -146,13 +146,13 @@ void print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* t
         printf("Reserved: %d\n", tcp_header->res1);
         printf("NS: %d\n", tcp_header->res2);
         printf("Window Size: %d\n", ntohs(tcp_header->window));
-        printf("Checksum: %x\n", ntohs(tcp_header->check));
+        printf("Checksum: 0x%x\n", ntohs(tcp_header->check));
         printf("Urgent Pointer: %d\n", ntohs(tcp_header->urg_ptr));
         printf("\n");
     }
 
     if(verbose>2){
-        printf("Flags: \n");
+        printf("Flags: 0x%x\n", tcp_header->th_flags);
         printf ("URG=%x, ACK=%x, PSH=%x, RST=%x, SYN=%x, FIN=%x\n", tcp_header->urg, tcp_header->ack, tcp_header->psh, tcp_header->rst, tcp_header->syn, tcp_header->fin);
         if(tcp_header->doff > 5){
             printf("Options: \n");
@@ -178,13 +178,13 @@ void print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* t
         printf("Reserved: %d\n", tcp_header->res1);
         printf("NS: %d\n", tcp_header->res2);
         printf("Window Size: %d\n", ntohs(tcp_header->window));
-        printf("Checksum: %x\n", ntohs(tcp_header->check));
+        printf("Checksum: 0x%x\n", ntohs(tcp_header->check));
         printf("Urgent Pointer: %d\n", ntohs(tcp_header->urg_ptr));
         printf("\n");
     }
 
     if(verbose>2){
-        printf("Flags: \n");
+        printf("Flags: 0x%x\n", tcp_header->th_flags);
         printf ("URG=%x, ACK=%x, PSH=%x, RST=%x, SYN=%x, FIN=%x\n", tcp_header->urg, tcp_header->ack, tcp_header->psh, tcp_header->rst, tcp_header->syn, tcp_header->fin);
         if(tcp_header->doff > 5){
             printf("Options: \n");
