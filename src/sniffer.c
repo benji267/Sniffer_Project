@@ -60,10 +60,11 @@ int main(int argc, char* argv[]){
                         break;
                     case IPPROTO_TCP:
                         int application;
-                        application=tcp(packet, verbosity,4);
+                        uint16_t options_length=0;
+                        application=tcp(packet, verbosity,4,&options_length);
                         switch(application){
                             case TELNET:
-                                telnet(packet, verbosity,4);
+                                telnet(packet, verbosity,4,&options_length);
                                 break;
                             default:
                                 break;
@@ -86,7 +87,8 @@ int main(int argc, char* argv[]){
                         udp(packet, verbosity,6);
                         break;
                     case IPPROTO_TCP:
-                        tcp(packet, verbosity,6);
+                        uint16_t options_length=0;
+                        tcp(packet, verbosity,6,&options_length);
                         break;
                     default:
                         break;

@@ -17,13 +17,22 @@
 
 
 /**
- * @brief Print Telnet header.
+ * @brief Print Telnet command.
  * 
  * @param packet
  * @param verbose
  * 
  */
-void print_telnet(const unsigned char *packet,int verbose);
+void print_telnet_command(const unsigned char *packet,int verbose);
+
+
+/**
+ * @brief Print Telnet option.
+ * 
+ * @param packet 
+ * @param verbose 
+ */
+void print_telnet_option(const unsigned char *packet,int verbose);
 
 
 /**
@@ -32,5 +41,6 @@ void print_telnet(const unsigned char *packet,int verbose);
  * @param packet 
  * @param verbose 
  * @param type 
+ * @param options_length
  */
-void telnet(const unsigned char* packet, int verbose, int type);
+void telnet(const unsigned char* packet, int verbose, int type,uint16_t *options_length);

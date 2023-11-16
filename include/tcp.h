@@ -29,8 +29,9 @@ int print_application(int source, int destination);
  * 
  * @param packet
  * @param offset
+ * @param options_length
  */
-void print_optionv4(const unsigned char *packet,uint8_t offset);
+void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *options_length);
 
 
 /**
@@ -38,8 +39,9 @@ void print_optionv4(const unsigned char *packet,uint8_t offset);
  * 
  * @param packet
  * @param offset
+ * @param options_length
  */
-void print_optionv6(const unsigned char *packet,uint8_t offset);
+void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *options_length);
 
 
 /**
@@ -48,8 +50,9 @@ void print_optionv6(const unsigned char *packet,uint8_t offset);
  * @param packet 
  * @param verbose 
  * @param tcp_header 
+ * @param options_length
  */
-int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header);
+int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header,uint16_t *options_length);
 
 
 /**
@@ -58,8 +61,9 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
  * @param packet 
  * @param verbose 
  * @param tcp_header 
+ * @param options_length
  */
-int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header);
+int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header,uint16_t *options_length);
 
 
 
@@ -70,5 +74,6 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
  * @param packet 
  * @param verbose 
  * @param type 
+ * @param options_length
  */
-int tcp(const unsigned char* packet, int verbose, int type);
+int tcp(const unsigned char* packet, int verbose, int type,uint16_t *options_length);

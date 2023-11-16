@@ -9,7 +9,7 @@ int print_application(int source, int destination){
 }
 
 
-void print_optionv4(const unsigned char *packet,uint8_t offset){
+void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length){
     const unsigned char *option = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr);
     uint8_t kind, length;
     while(option < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + offset){
@@ -22,6 +22,7 @@ void print_optionv4(const unsigned char *packet,uint8_t offset){
             
             case 1:
                 printf("%d No-Operation (NOP)\n", kind);
+                *total_options_length+=1;
                 break;
 
             case 2: 
@@ -30,6 +31,7 @@ void print_optionv4(const unsigned char *packet,uint8_t offset){
                 printf("Length: %d\n", length);
                 printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
                 option+=LENMAXSEG-1;
+                *total_options_length+=length;
                 break;
             
             case 3:
@@ -39,6 +41,7 @@ void print_optionv4(const unsigned char *packet,uint8_t offset){
                 printf("Length: %d\n", length);
                 printf("Shift Count: %d\n", *(option + 2));
                 option+=LENWINDOW-1;
+                *total_options_length+=length;
                 break;
             
             case 4:
@@ -47,6 +50,7 @@ void print_optionv4(const unsigned char *packet,uint8_t offset){
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 option+=LEN_SACK_PERMITTED-1;
+                *total_options_length+=length;
                 break;
             
             case 5:
@@ -54,6 +58,7 @@ void print_optionv4(const unsigned char *packet,uint8_t offset){
                     printf("%d SACK Option\n", kind);
                     length = *(option + 1);
                     printf("Length: %d\n", length);
+                    *total_options_length+=length;
                     break;
                 
             case 8:
@@ -63,6 +68,7 @@ void print_optionv4(const unsigned char *packet,uint8_t offset){
                 printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
                 printf("Timestamp Echo Reply: %d\n", ntohl(*(uint32_t*)(option + 6)));
                 option+=LEN_TIMESTAMP-1;
+                *total_options_length+=length;
                 break;
             
             default:
@@ -71,9 +77,10 @@ void print_optionv4(const unsigned char *packet,uint8_t offset){
         }
         option++;
     }
+    printf("Total Options Length: %d bytes\n", *total_options_length);
 }
     
-void print_optionv6(const unsigned char *packet,uint8_t offset){
+void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length){
     const unsigned char *option = packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr) + sizeof(struct tcphdr);
     uint8_t kind, length;
     while(option < packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr) + offset){
@@ -86,6 +93,7 @@ void print_optionv6(const unsigned char *packet,uint8_t offset){
             
             case 1:
                 printf("%d No-Operation (NOP)\n", kind);
+                *total_options_length+=1;
                 break;
 
             case 2: 
@@ -94,6 +102,7 @@ void print_optionv6(const unsigned char *packet,uint8_t offset){
                 printf("Length: %d\n", length);
                 printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
                 option+=LENMAXSEG-1;
+                *total_options_length+=length;
                 break;
             
             case 3:
@@ -103,6 +112,7 @@ void print_optionv6(const unsigned char *packet,uint8_t offset){
                 printf("Length: %d\n", length);
                 printf("Shift Count: %d\n", *(option + 2));
                 option+=LENWINDOW-1;
+                *total_options_length+=length;
                 break;
             
             case 4:
@@ -111,6 +121,7 @@ void print_optionv6(const unsigned char *packet,uint8_t offset){
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 option+=LEN_SACK_PERMITTED-1;
+                *total_options_length+=length;
                 break;
             
             case 5:
@@ -118,6 +129,7 @@ void print_optionv6(const unsigned char *packet,uint8_t offset){
                     printf("%d SACK Option\n", kind);
                     length = *(option + 1);
                     printf("Length: %d\n", length);
+                    *total_options_length+=length;
                     break;
                 
             case 8:
@@ -127,6 +139,7 @@ void print_optionv6(const unsigned char *packet,uint8_t offset){
                 printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
                 printf("Timestamp Echo Reply: %d\n", ntohl(*(uint32_t*)(option + 6)));
                 option+=LEN_TIMESTAMP-1;
+                *total_options_length+=length;
                 break;
             
             default:
@@ -135,13 +148,14 @@ void print_optionv6(const unsigned char *packet,uint8_t offset){
         }
         option++;
     }
+    printf("Total Options Length: %d bytes\n", *total_options_length);
 }
 
 
 
 
 
-int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header){
+int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header, uint16_t *options_length){
     int application;
     printf("Source Port: %d -> ", ntohs(tcp_header->source));
     printf("Destination Port: %d\n", ntohs(tcp_header->dest));
@@ -164,7 +178,7 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
         printf ("URG=%x, ACK=%x, PSH=%x, RST=%x, SYN=%x, FIN=%x\n", tcp_header->urg, tcp_header->ack, tcp_header->psh, tcp_header->rst, tcp_header->syn, tcp_header->fin);
         if(tcp_header->doff > 5){
             printf("Options: \n");
-            print_optionv4(packet, tcp_header->doff*4);
+            print_optionv4(packet, tcp_header->doff*4, options_length);
         }
         application=print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
         printf("\n");
@@ -175,7 +189,7 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
     return application;
 }
 
-int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header){
+int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header, uint16_t *options_length){
     int application;
     printf("Source Port: %d -> ", ntohs(tcp_header->source));
     printf("Destination Port: %d\n", ntohs(tcp_header->dest));
@@ -198,7 +212,7 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
         printf ("URG=%x, ACK=%x, PSH=%x, RST=%x, SYN=%x, FIN=%x\n", tcp_header->urg, tcp_header->ack, tcp_header->psh, tcp_header->rst, tcp_header->syn, tcp_header->fin);
         if(tcp_header->doff > 5){
             printf("Options: \n");
-            print_optionv6(packet, tcp_header->doff*4);
+            print_optionv6(packet, tcp_header->doff*4, options_length);
         }
         application=print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
         printf("\n");
@@ -209,13 +223,13 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
 }
 
 
-int tcp(const unsigned char* packet, int verbose, int type){
+int tcp(const unsigned char* packet, int verbose, int type, uint16_t *options_length){
     int source_port;
     switch(type){
         case 4:
             const struct tcphdr *tcp_header = (struct tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct iphdr));
             printf("Protocol TCPV4: \n");
-            source_port=print_tcpv4(packet, verbose, tcp_header);
+            source_port=print_tcpv4(packet, verbose, tcp_header, options_length);
             for(int i=0;i<6;i++){
                 printf("\n");
             }
@@ -224,7 +238,7 @@ int tcp(const unsigned char* packet, int verbose, int type){
         case 6:
             const struct tcphdr *tcp_header6 = (struct tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
             printf("Protocol TCPV6: \n");
-            source_port=print_tcpv6(packet, verbose, tcp_header6);
+            source_port=print_tcpv6(packet, verbose, tcp_header6, options_length);
             for(int i=0;i<6;i++){
                 printf("\n");
             }
