@@ -5,6 +5,7 @@
         "ethernet.h": "c",
         "udp.h": "c",
         "getopt.h": "c",
-        "sctp.h": "c"
+        "sctp.h": "c",
+        "features.h": "c"
     }
 }

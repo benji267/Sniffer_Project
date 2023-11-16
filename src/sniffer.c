@@ -5,6 +5,7 @@
 #include "udp.h"
 #include "tcp.h"
 #include "sctp.h"
+#include "telnet.h"
 
 
 int main(int argc, char* argv[]){
@@ -58,7 +59,15 @@ int main(int argc, char* argv[]){
                         udp(packet, verbosity,4);
                         break;
                     case IPPROTO_TCP:
-                        tcp(packet, verbosity,4);
+                        int application;
+                        application=tcp(packet, verbosity,4);
+                        switch(application){
+                            case TELNET:
+                                telnet(packet, verbosity,4);
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                     case IPPROTO_SCTP:
                         sctp(packet, verbosity,4);

@@ -11,6 +11,17 @@
 #define LEN_TIMESTAMP 10
 
 
+#define TELNET 23
+
+
+/**
+ * @brief Print application.
+ * 
+ * @param source 
+ * @param destination 
+ * @return the numeric value of the application.
+ */
+int print_application(int source, int destination);
 
 
 /**
@@ -38,7 +49,7 @@ void print_optionv6(const unsigned char *packet,uint8_t offset);
  * @param verbose 
  * @param tcp_header 
  */
-void print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header);
+int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header);
 
 
 /**
@@ -48,7 +59,7 @@ void print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* t
  * @param verbose 
  * @param tcp_header 
  */
-void print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header);
+int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header);
 
 
 
@@ -60,4 +71,4 @@ void print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* t
  * @param verbose 
  * @param type 
  */
-void tcp(const unsigned char* packet, int verbose, int type);
+int tcp(const unsigned char* packet, int verbose, int type);
