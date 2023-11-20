@@ -1,7 +1,14 @@
 #include "tcp.h"
+#include <ctype.h>
+#include <stdbool.h>
 
+#define BANNER_LENGTH 80
+
+
+#define SE 240
 #define NOP 241
 #define DM 242
+#define BRK 243
 #define IP 244
 #define AO 245
 #define AYT 246
@@ -15,24 +22,6 @@
 #define DONT 254
 #define IAC 255
 
-
-/**
- * @brief Print Telnet command.
- * 
- * @param packet
- * @param verbose
- * 
- */
-void print_telnet_command(const unsigned char *packet,int verbose);
-
-
-/**
- * @brief Print Telnet option.
- * 
- * @param packet 
- * @param verbose 
- */
-void print_telnet_option(const unsigned char *packet,int verbose);
 
 
 /**

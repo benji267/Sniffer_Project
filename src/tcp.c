@@ -2,7 +2,7 @@
 
 int print_application(int source, int destination){
     if(source == TELNET || destination==TELNET){
-        printf("Application: Telnet\n");
+        printf("Following Application: Telnet\n");
         return TELNET;
     }
     return -1;
@@ -75,9 +75,11 @@ void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_o
                 printf("%d Unknown\n", kind);
                 break;
         }
+        printf("\n");
         option++;
     }
     printf("Total Options Length: %d bytes\n", *total_options_length);
+    printf("\n");
 }
     
 void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length){
@@ -149,6 +151,7 @@ void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_o
         option++;
     }
     printf("Total Options Length: %d bytes\n", *total_options_length);
+    printf("\n");
 }
 
 
@@ -176,6 +179,7 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
     if(verbose>2){
         printf("Flags: 0x%x\n", tcp_header->th_flags);
         printf ("URG=%x, ACK=%x, PSH=%x, RST=%x, SYN=%x, FIN=%x\n", tcp_header->urg, tcp_header->ack, tcp_header->psh, tcp_header->rst, tcp_header->syn, tcp_header->fin);
+        printf("\n");
         if(tcp_header->doff > 5){
             printf("Options: \n");
             print_optionv4(packet, tcp_header->doff*4, options_length);
@@ -210,6 +214,7 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
     if(verbose>2){
         printf("Flags: 0x%x\n", tcp_header->th_flags);
         printf ("URG=%x, ACK=%x, PSH=%x, RST=%x, SYN=%x, FIN=%x\n", tcp_header->urg, tcp_header->ack, tcp_header->psh, tcp_header->rst, tcp_header->syn, tcp_header->fin);
+        printf("\n");
         if(tcp_header->doff > 5){
             printf("Options: \n");
             print_optionv6(packet, tcp_header->doff*4, options_length);

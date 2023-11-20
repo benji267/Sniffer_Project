@@ -6,6 +6,7 @@
         "udp.h": "c",
         "getopt.h": "c",
         "sctp.h": "c",
-        "features.h": "c"
+        "features.h": "c",
+        "telnetfiles.h": "c"
     }
 }
