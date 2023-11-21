@@ -3,40 +3,70 @@
 
 void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_length){
     printf("Telnet Application:\n");
-    const unsigned char* new_packet;
+    printf("\n");
+    const unsigned char* new_packetv2;
+    const unsigned char* new_packetv3;
     switch(type){
         case 4:
             
             //Create a packet just with the telnet part
-            new_packet = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr)+*options_length;
+            new_packetv2 = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr)+*options_length;
+            new_packetv3 = packet+sizeof(struct ether_header)+sizeof(struct iphdr)+sizeof(struct tcphdr)+*options_length;
             uint16_t size_telnet = ntohs(((struct iphdr*)(packet + sizeof(struct ether_header)))->tot_len) - sizeof(struct iphdr) - sizeof(struct tcphdr) - *options_length;
 
             printf("Size of Telnet packet: %d\n",size_telnet);
+            printf("\n");
+
             //Print the telnet part. I have size_telnet*3 because I have to print the IAC, the command and the option.
-            while(new_packet < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr) + size_telnet*3){
+            while(new_packetv2 < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr) + size_telnet*3){
                 if(verbose>1){
-                    if(*new_packet == IAC){
-                        printf("IAC:\n ");
-                        new_packet++;
-                        print_telnet_command(new_packet,verbose);
+                    if(*new_packetv2 == IAC){
+                        printf("IAC:\n");
+                        new_packetv2++;
+                        print_telnet_commandv2(&new_packetv2);
                     }
                     else{
-                        new_packet++;
+                        printf("Data: ");
+                        while(new_packetv2 < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr) + size_telnet * 3 && *new_packetv2 != IAC){
+                            if(*new_packetv2 == 0x0d){
+                                printf("\\r");
+                            }
+                            else if(*new_packetv2 == 0x0a){
+                                printf("\\n");
+                                goto end;
+                            }
+                            else{
+                                printf("%c",*new_packetv2);
+                            }
+                            new_packetv2++;
+                        }
                     }
-
                 }
 
-                if(verbose>2){}
+                if(verbose>2){
+                    if(*new_packetv3 == IAC){
+                        new_packetv3++;
+                        print_telnet_commandv3(&new_packetv3);
+                    }
+                    else{
+                        new_packetv3++;
+                    }
+                }
+                printf("\n");
 
             }
+
+            end:
+                printf("\n");
+                
             for(int i=0;i<6;i++){
                 printf("\n");
             }
             break;
-        case 6:
-            new_packet=packet+sizeof(struct ether_header)+sizeof(struct ip6_hdr)+sizeof(struct tcphdr);
-            print_telnet_command(new_packet,verbose);
-            break;
+        /*case 6:
+            new_packetv2=packet+sizeof(struct ether_header)+sizeof(struct ip6_hdr)+sizeof(struct tcphdr);
+            print_telnet_commandv2(new_packetv2);
+            break;*/
         default:
             break;
     }

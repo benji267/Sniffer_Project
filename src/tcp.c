@@ -9,6 +9,7 @@ int print_application(int source, int destination){
 }
 
 
+
 void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length){
     const unsigned char *option = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr);
     uint8_t kind, length;
