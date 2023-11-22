@@ -19,11 +19,18 @@
  * 
  * @param source 
  * @param destination 
- * @return the numeric value of the application.
  */
-int print_application(int source, int destination);
+void print_application(int source, int destination);
 
 
+/**
+ * @brief Get the numeric value of the application.
+ * 
+ * @param source
+ * @param destination
+ * 
+ */
+int app_value(int source, int destination);
 
 /**
  * @brief Print TCPV4 option.

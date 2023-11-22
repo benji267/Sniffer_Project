@@ -1,8 +1,16 @@
 #include "tcp.h"
 
-int print_application(int source, int destination){
+void print_application(int source, int destination){
     if(source == TELNET || destination==TELNET){
         printf("Following Application: Telnet\n");
+    }
+
+    return ;
+    
+}
+
+int app_value(int source, int destination){
+    if(source == TELNET || destination==TELNET){
         return TELNET;
     }
     return -1;
@@ -163,6 +171,7 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
     int application;
     printf("Source Port: %d -> ", ntohs(tcp_header->source));
     printf("Destination Port: %d\n", ntohs(tcp_header->dest));
+    application=app_value(ntohs(tcp_header->source), ntohs(tcp_header->dest));
     printf("\n");
 
     if(verbose>1){
@@ -185,11 +194,10 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
             printf("Options: \n");
             print_optionv4(packet, tcp_header->doff*4, options_length);
         }
-        application=print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
+        print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
         printf("\n");
 
     }
-
 
     return application;
 }
@@ -198,6 +206,8 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
     int application;
     printf("Source Port: %d -> ", ntohs(tcp_header->source));
     printf("Destination Port: %d\n", ntohs(tcp_header->dest));
+    application=app_value(ntohs(tcp_header->source), ntohs(tcp_header->dest));
+    
     printf("\n");
 
    if(verbose>1){
@@ -220,7 +230,7 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
             printf("Options: \n");
             print_optionv6(packet, tcp_header->doff*4, options_length);
         }
-        application=print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
+        print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
         printf("\n");
 
     }

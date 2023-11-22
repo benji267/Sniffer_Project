@@ -3,7 +3,6 @@
 
 void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_length){
     printf("Telnet Application:\n");
-    printf("\n");
     const unsigned char* new_packetv2;
     const unsigned char* new_packetv3;
     switch(type){
@@ -16,16 +15,19 @@ void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_
 
             printf("Size of Telnet packet: %d\n",size_telnet);
             printf("\n");
-
             //Print the telnet part. I have size_telnet*3 because I have to print the IAC, the command and the option.
             while(new_packetv2 < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr) + size_telnet*3){
+                if(verbose==1){
+                    break;
+                }
+
                 if(verbose>1){
                     if(*new_packetv2 == IAC){
                         printf("IAC:\n");
                         new_packetv2++;
                         print_telnet_commandv2(&new_packetv2);
                     }
-                    else{
+                    else{/*
                         printf("Data: ");
                         while(new_packetv2 < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr) + size_telnet * 3 && *new_packetv2 != IAC){
                             if(*new_packetv2 == 0x0d){
@@ -37,9 +39,9 @@ void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_
                             }
                             else{
                                 printf("%c",*new_packetv2);
-                            }
+                            }*/
                             new_packetv2++;
-                        }
+                        //}
                     }
                 }
 
@@ -56,17 +58,17 @@ void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_
 
             }
 
-            end:
-                printf("\n");
+            /*end:
+                printf("\n");*/
                 
             for(int i=0;i<6;i++){
                 printf("\n");
             }
             break;
-        /*case 6:
+        case 6:
             new_packetv2=packet+sizeof(struct ether_header)+sizeof(struct ip6_hdr)+sizeof(struct tcphdr);
-            print_telnet_commandv2(new_packetv2);
-            break;*/
+            print_telnet_commandv2(&new_packetv2);
+            break;
         default:
             break;
     }

@@ -30,6 +30,5 @@
  * @param packet 
  * @param verbose 
  * @param type 
- * @param options_length
  */
 void telnet(const unsigned char* packet, int verbose, int type,uint16_t *options_length);
