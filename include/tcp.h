@@ -12,6 +12,7 @@
 
 
 #define TELNET 23
+#define HTTP 80
 
 
 /**
@@ -33,6 +34,7 @@ void print_application(int source, int destination);
 int app_value(int source, int destination);
 
 /**
+ * 
  * @brief Print TCPV4 option.
  * 
  * @param packet

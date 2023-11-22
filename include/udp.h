@@ -5,16 +5,6 @@
 
 
 /**
- * @brief Calculate UDP checksum.
- * 
- * @param packet 
- * @param len 
- * @return uint16_t 
- */
-uint16_t calculate_udp_checksum(const unsigned char* packet, size_t len);
-
-
-/**
  * @brief Display UDPV4 header.
  * 
  * @param packet

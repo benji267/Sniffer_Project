@@ -5,6 +5,10 @@ void print_application(int source, int destination){
         printf("Following Application: Telnet\n");
     }
 
+    else if(source == HTTP || destination==HTTP){
+        printf("Following Application: HTTP\n");
+    }
+
     return ;
     
 }
@@ -12,6 +16,10 @@ void print_application(int source, int destination){
 int app_value(int source, int destination){
     if(source == TELNET || destination==TELNET){
         return TELNET;
+    }
+
+    else if(source == HTTP || destination==HTTP){
+        return HTTP;
     }
     return -1;
 }
@@ -22,20 +30,24 @@ void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_o
     const unsigned char *option = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr);
     uint8_t kind, length;
     while(option < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + offset){
+        printf("TCP Option - ");
         kind = *option;
         switch(kind){
 
             case 0:
-                printf("%d End of Option List (EOL)\n", kind);
+                printf("End of Option List (EOL)\n");
+                printf("Kind: EOL (%d)\n", kind);
                 break;
             
             case 1:
-                printf("%d No-Operation (NOP)\n", kind);
+                printf("No-Operation (NOP)\n");
+                printf("Kind: No-Operation (%d)\n", kind);
                 *total_options_length+=1;
                 break;
 
             case 2: 
-                printf("%d Maximum Segment Size (MSS)\n", kind);
+                printf("Maximum Segment Size (MSS)\n");
+                printf("Kind: Maximum Segment Size (%d)\n", kind);
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
@@ -45,7 +57,8 @@ void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_o
             
             case 3:
 
-                printf("%d Window Scale (WSS)\n", kind);
+                printf("Window Scale (WSS)\n");
+                printf("Kind: Window Scale (%d)\n", kind);
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 printf("Shift Count: %d\n", *(option + 2));
@@ -55,7 +68,8 @@ void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_o
             
             case 4:
 
-                printf("%d SACK Permitted Option\n", kind);
+                printf("SACK Permitted Option\n");
+                printf("Kind: SACK Permitted (%d)\n", kind);
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 option+=LEN_SACK_PERMITTED-1;
@@ -64,14 +78,16 @@ void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_o
             
             case 5:
                     
-                    printf("%d SACK Option\n", kind);
+                    printf("SACK Option\n");
+                    printf("Kind: SACK (%d)\n", kind);
                     length = *(option + 1);
                     printf("Length: %d\n", length);
                     *total_options_length+=length;
                     break;
                 
             case 8:
-                printf("%d Timestamps Option\n", kind);
+                printf("Timestamps Option\n");
+                printf("Kind: Timestamps (%d)\n", kind);
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
@@ -95,20 +111,24 @@ void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_o
     const unsigned char *option = packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr) + sizeof(struct tcphdr);
     uint8_t kind, length;
     while(option < packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr) + offset){
+        printf("TCP Option - ");
         kind = *option;
         switch(kind){
 
             case 0:
-                printf("%d End of Option List (EOL)\n", kind);
+                printf("End of Option List (EOL)\n");
+                printf("Kind: EOL (%d)\n", kind);
                 break;
             
             case 1:
-                printf("%d No-Operation (NOP)\n", kind);
+                printf("No-Operation (NOP)\n");
+                printf("Kind: No-Operation (%d)\n", kind);
                 *total_options_length+=1;
                 break;
 
             case 2: 
-                printf("%d Maximum Segment Size (MSS)\n", kind);
+                printf("Maximum Segment Size (MSS)\n");
+                printf("Kind: Maximum Segment Size (%d)\n", kind);
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
@@ -118,7 +138,8 @@ void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_o
             
             case 3:
 
-                printf("%d Window Scale (WSS)\n", kind);
+                printf("Window Scale (WSS)\n");
+                printf("Kind: Window Scale (%d)\n", kind);
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 printf("Shift Count: %d\n", *(option + 2));
@@ -128,7 +149,8 @@ void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_o
             
             case 4:
 
-                printf("%d SACK Permitted Option\n", kind);
+                printf("SACK Permitted Option\n");
+                printf("Kind: SACK Permitted (%d)\n", kind);
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 option+=LEN_SACK_PERMITTED-1;
@@ -137,14 +159,16 @@ void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_o
             
             case 5:
                     
-                    printf("%d SACK Option\n", kind);
+                    printf("SACK Option\n");
+                    printf("Kind: SACK (%d)\n", kind);
                     length = *(option + 1);
                     printf("Length: %d\n", length);
                     *total_options_length+=length;
                     break;
                 
             case 8:
-                printf("%d Timestamps Option\n", kind);
+                printf("Timestamps Option\n");
+                printf("Kind: Timestamps (%d)\n", kind);
                 length = *(option + 1);
                 printf("Length: %d\n", length);
                 printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
@@ -157,6 +181,7 @@ void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_o
                 printf("%d Unknown\n", kind);
                 break;
         }
+        printf("\n");
         option++;
     }
     printf("Total Options Length: %d bytes\n", *total_options_length);
