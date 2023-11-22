@@ -244,7 +244,6 @@ void print_telnet_option(const unsigned char** packet,bool s_end,bool suboption)
         
     }
     (*option)++;
-
     if(suboption){
         while(**option == IAC){
             (*option)++;

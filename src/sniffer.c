@@ -6,6 +6,7 @@
 #include "tcp.h"
 #include "sctp.h"
 #include "telnet.h"
+#include "http.h"
 
 
 int main(int argc, char* argv[]){
@@ -66,6 +67,10 @@ int main(int argc, char* argv[]){
                             case TELNET:
                                 telnet(packet, verbosity,4,&options_length);
                                 break;
+                            case HTTP:
+                                http(packet, verbosity,4,&options_length);
+                                break;
+
                             default:
                                 break;
                         }
@@ -87,8 +92,19 @@ int main(int argc, char* argv[]){
                         udp(packet, verbosity,6);
                         break;
                     case IPPROTO_TCP:
+                        int application;
                         uint16_t options_length=0;
-                        tcp(packet, verbosity,6,&options_length);
+                        application=tcp(packet, verbosity,6,&options_length);
+                        switch(application){
+                            case TELNET:
+                                telnet(packet, verbosity,4,&options_length);
+                                break;
+                            case HTTP:
+                                http(packet, verbosity,4,&options_length);
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                     default:
                         break;
