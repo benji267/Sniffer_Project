@@ -26,166 +26,224 @@ int app_value(int source, int destination){
 
 
 
-void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length){
+void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length, int verbose){
     const unsigned char *option = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr);
     uint8_t kind, length;
     while(option < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + offset){
-        printf("TCP Option - ");
+        
+        if(verbose>2){
+            printf("TCP Option - ");
+        }
         kind = *option;
         switch(kind){
 
             case 0:
-                printf("End of Option List (EOL)\n");
-                printf("Kind: EOL (%d)\n", kind);
+                if(verbose>2){
+                    printf("End of Option List (EOL)\n");
+                    printf("Kind: EOL (%d)\n", kind);
+                }
                 break;
             
             case 1:
-                printf("No-Operation (NOP)\n");
-                printf("Kind: No-Operation (%d)\n", kind);
+                if(verbose>2){
+                    printf("No-Operation (NOP)\n");
+                    printf("Kind: No-Operation (%d)\n", kind);
+                }
                 *total_options_length+=1;
                 break;
 
             case 2: 
-                printf("Maximum Segment Size (MSS)\n");
-                printf("Kind: Maximum Segment Size (%d)\n", kind);
+                if(verbose>2){
+                    printf("Maximum Segment Size (MSS)\n");
+                    printf("Kind: Maximum Segment Size (%d)\n", kind);
+                }
                 length = *(option + 1);
-                printf("Length: %d\n", length);
-                printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
+                if(verbose>2){
+                    printf("Length: %d\n", length);
+                    printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
+                }
                 option+=LENMAXSEG-1;
                 *total_options_length+=length;
                 break;
             
             case 3:
-
-                printf("Window Scale (WSS)\n");
-                printf("Kind: Window Scale (%d)\n", kind);
+                if(verbose>2){
+                    printf("Window Scale (WSS)\n");
+                    printf("Kind: Window Scale (%d)\n", kind);
+                }
                 length = *(option + 1);
-                printf("Length: %d\n", length);
-                printf("Shift Count: %d\n", *(option + 2));
+                if(verbose>2){
+                    printf("Length: %d\n", length);
+                    printf("Shift Count: %d\n", *(option + 2));
+                }
                 option+=LENWINDOW-1;
                 *total_options_length+=length;
                 break;
             
             case 4:
 
-                printf("SACK Permitted Option\n");
-                printf("Kind: SACK Permitted (%d)\n", kind);
+                if(verbose>2){
+                    printf("SACK Permitted Option\n");
+                    printf("Kind: SACK Permitted (%d)\n", kind);
+                }
                 length = *(option + 1);
-                printf("Length: %d\n", length);
+                if(verbose>2){
+                    printf("Length: %d\n", length);
+                }
                 option+=LEN_SACK_PERMITTED-1;
                 *total_options_length+=length;
                 break;
             
             case 5:
-                    
-                    printf("SACK Option\n");
-                    printf("Kind: SACK (%d)\n", kind);
+                    if(verbose>2){
+                        printf("SACK Option\n");
+                        printf("Kind: SACK (%d)\n", kind);
+                    }
                     length = *(option + 1);
-                    printf("Length: %d\n", length);
+                    if(verbose>2){
+                        printf("Length: %d\n", length);
+                    }
                     *total_options_length+=length;
                     break;
                 
             case 8:
-                printf("Timestamps Option\n");
-                printf("Kind: Timestamps (%d)\n", kind);
+                if(verbose>2){
+                    printf("Timestamps Option\n");
+                    printf("Kind: Timestamps (%d)\n", kind);
+                }
                 length = *(option + 1);
-                printf("Length: %d\n", length);
-                printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
-                printf("Timestamp Echo Reply: %d\n", ntohl(*(uint32_t*)(option + 6)));
+                if(verbose>2){
+                    printf("Length: %d\n", length);
+                    printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
+                    printf("Timestamp Echo Reply: %d\n", ntohl(*(uint32_t*)(option + 6)));
+                }
                 option+=LEN_TIMESTAMP-1;
                 *total_options_length+=length;
                 break;
             
             default:
-                printf("%d Unknown\n", kind);
+                if(verbose>2){
+                    printf("%d Unknown\n", kind);
+                }
                 break;
         }
         printf("\n");
         option++;
     }
-    printf("Total Options Length: %d bytes\n", *total_options_length);
-    printf("\n");
+    if(verbose>2){
+        printf("Total Options Length: %d bytes\n", *total_options_length);
+        printf("\n");
+    }
 }
     
-void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length){
+void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length, int verbose){
     const unsigned char *option = packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr) + sizeof(struct tcphdr);
     uint8_t kind, length;
     while(option < packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr) + offset){
-        printf("TCP Option - ");
+        
+        if(verbose>2){
+            printf("TCP Option - ");
+        }
         kind = *option;
         switch(kind){
 
             case 0:
-                printf("End of Option List (EOL)\n");
-                printf("Kind: EOL (%d)\n", kind);
+                if(verbose>2){
+                    printf("End of Option List (EOL)\n");
+                    printf("Kind: EOL (%d)\n", kind);
+                }
                 break;
             
             case 1:
-                printf("No-Operation (NOP)\n");
-                printf("Kind: No-Operation (%d)\n", kind);
+                if(verbose>2){
+                    printf("No-Operation (NOP)\n");
+                    printf("Kind: No-Operation (%d)\n", kind);
+                }
                 *total_options_length+=1;
                 break;
 
             case 2: 
-                printf("Maximum Segment Size (MSS)\n");
-                printf("Kind: Maximum Segment Size (%d)\n", kind);
+                if(verbose>2){
+                    printf("Maximum Segment Size (MSS)\n");
+                    printf("Kind: Maximum Segment Size (%d)\n", kind);
+                }
                 length = *(option + 1);
-                printf("Length: %d\n", length);
-                printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
+                if(verbose>2){
+                    printf("Length: %d\n", length);
+                    printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
+                }
                 option+=LENMAXSEG-1;
                 *total_options_length+=length;
                 break;
             
             case 3:
-
-                printf("Window Scale (WSS)\n");
-                printf("Kind: Window Scale (%d)\n", kind);
+                if(verbose>2){
+                    printf("Window Scale (WSS)\n");
+                    printf("Kind: Window Scale (%d)\n", kind);
+                }
                 length = *(option + 1);
-                printf("Length: %d\n", length);
-                printf("Shift Count: %d\n", *(option + 2));
+                if(verbose>2){
+                    printf("Length: %d\n", length);
+                    printf("Shift Count: %d\n", *(option + 2));
+                }
                 option+=LENWINDOW-1;
                 *total_options_length+=length;
                 break;
             
             case 4:
 
-                printf("SACK Permitted Option\n");
-                printf("Kind: SACK Permitted (%d)\n", kind);
+                if(verbose>2){
+                    printf("SACK Permitted Option\n");
+                    printf("Kind: SACK Permitted (%d)\n", kind);
+                }
                 length = *(option + 1);
-                printf("Length: %d\n", length);
+                if(verbose>2){
+                    printf("Length: %d\n", length);
+                }
                 option+=LEN_SACK_PERMITTED-1;
                 *total_options_length+=length;
                 break;
             
             case 5:
-                    
-                    printf("SACK Option\n");
-                    printf("Kind: SACK (%d)\n", kind);
+                    if(verbose>2){
+                        printf("SACK Option\n");
+                        printf("Kind: SACK (%d)\n", kind);
+                    }
                     length = *(option + 1);
-                    printf("Length: %d\n", length);
+                    if(verbose>2){
+                        printf("Length: %d\n", length);
+                    }
                     *total_options_length+=length;
                     break;
                 
             case 8:
-                printf("Timestamps Option\n");
-                printf("Kind: Timestamps (%d)\n", kind);
+                if(verbose>2){
+                    printf("Timestamps Option\n");
+                    printf("Kind: Timestamps (%d)\n", kind);
+                }
                 length = *(option + 1);
-                printf("Length: %d\n", length);
-                printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
-                printf("Timestamp Echo Reply: %d\n", ntohl(*(uint32_t*)(option + 6)));
+                if(verbose>2){
+                    printf("Length: %d\n", length);
+                    printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
+                    printf("Timestamp Echo Reply: %d\n", ntohl(*(uint32_t*)(option + 6)));
+                }
                 option+=LEN_TIMESTAMP-1;
                 *total_options_length+=length;
                 break;
             
             default:
-                printf("%d Unknown\n", kind);
+                if(verbose>2){
+                    printf("%d Unknown\n", kind);
+                }
                 break;
         }
         printf("\n");
         option++;
     }
-    printf("Total Options Length: %d bytes\n", *total_options_length);
-    printf("\n");
+    if(verbose>2){
+        printf("Total Options Length: %d bytes\n", *total_options_length);
+        printf("\n");
+    }
 }
 
 
@@ -200,7 +258,7 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
     printf("\n");
 
     if(verbose>1){
-        printf("Sequence Number: %d\n", ntohl(tcp_header->seq));
+        printf("Sequence Number: %u\n", ntohl(tcp_header->seq));
         printf("Acknowledgment Number: %d\n", ntohl(tcp_header->ack_seq));
         printf("Data Offset: %d\n", tcp_header->doff);
         printf("Reserved: %d\n", tcp_header->res1);
@@ -208,6 +266,7 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
         printf("Window Size: %d\n", ntohs(tcp_header->window));
         printf("Checksum: 0x%x\n", ntohs(tcp_header->check));
         printf("Urgent Pointer: %d\n", ntohs(tcp_header->urg_ptr));
+        print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
         printf("\n");
     }
 
@@ -217,12 +276,14 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
         printf("\n");
         if(tcp_header->doff > 5){
             printf("Options: \n");
-            print_optionv4(packet, tcp_header->doff*4, options_length);
         }
-        print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
         printf("\n");
 
     }
+    //I need the options length in each verbose level so I pass it as a pointer and I put a condition on verbose in the print_option function.
+    if(tcp_header->doff > 5){
+            print_optionv4(packet, tcp_header->doff*4, options_length,verbose);
+        }
 
     return application;
 }
@@ -253,7 +314,7 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
         printf("\n");
         if(tcp_header->doff > 5){
             printf("Options: \n");
-            print_optionv6(packet, tcp_header->doff*4, options_length);
+            print_optionv6(packet, tcp_header->doff*4, options_length,verbose);
         }
         print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
         printf("\n");

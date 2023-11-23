@@ -37,7 +37,11 @@ void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_
                                 printf("\\n");
                             }
                             else{
-                                printf("%c",*new_packetv2);
+                                if(isprint(*new_packetv2))
+                                    printf("%c",*new_packetv2);
+                                else{
+                                    printf(".");
+                                }
                             }*/
                             new_packetv2++;
                         //}
@@ -92,7 +96,11 @@ void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_
                                 printf("\\n");
                             }
                             else{
-                                printf("%c",*new_packetv2);
+                                if(isprint(*new_packetv2))
+                                    printf("%c",*new_packetv2);
+                                else{
+                                    printf(".");
+                                }
                             }*/
                             new_packetv2++;
                         //}
