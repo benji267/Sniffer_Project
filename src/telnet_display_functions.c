@@ -10,9 +10,11 @@
 // Command: Won't (252)
 //Subcommand: Echo 
 //That's why I have a function for verbosity=2 and another one for verbosity=3.
+//The new_packet3 is just use to print the subcommand and suboption so that's why
+//print_telnet_option is different for verbosity=2 and verbosity=3.
 
 
-void print_telnet_option(const unsigned char** packet,bool s_end,bool suboption){
+void print_telnet_option(const unsigned char** packet,bool s_end,bool suboption,uint16_t *size_telnet,int version){
     const unsigned char** option=packet;
     if(s_end){
         return;
@@ -244,10 +246,28 @@ void print_telnet_option(const unsigned char** packet,bool s_end,bool suboption)
         
     }
     (*option)++;
+
+    if(version==2){
+        (*size_telnet)--;
+    }
+
     if(suboption){
-        while(**option == IAC){
+        while(**option != IAC){
             (*option)++;
-            print_telnet_commandv2(option);
+            if(version==2){
+                (*size_telnet)--;
+            }
+        }
+        (*option)++;
+        if(version==2){
+            printf("IAC:\n");
+            (*size_telnet)--;
+        }
+        if(version==2){
+            print_telnet_commandv2(option,size_telnet);
+        }
+        else{
+            print_telnet_commandv3(option);
         }
     }
 
@@ -256,7 +276,7 @@ void print_telnet_option(const unsigned char** packet,bool s_end,bool suboption)
 
 
 
-void print_telnet_commandv2(const unsigned char** packet){
+void print_telnet_commandv2(const unsigned char** packet,uint16_t *size_telnet){
     const unsigned char** command=packet;
     //boolean to know if the command is the last one and to stop the recursion
     bool s_end=false;
@@ -333,7 +353,8 @@ void print_telnet_commandv2(const unsigned char** packet){
             
     }
     (*command)++;
-    print_telnet_option(command,s_end,suboption);
+    (*size_telnet)--;
+    print_telnet_option(command,s_end,suboption,size_telnet,2);
     return;
 }
 
@@ -417,6 +438,8 @@ void print_telnet_commandv3(const unsigned char** packet){
         printf("\nSubcommand:");
     }
     (*command)++;
-    print_telnet_option(command,s_end,suboption);
+    print_telnet_option(command,s_end,suboption,NULL,3);
     return;
 }
+
+//When we have a suboption, to simplify the code, I print ne number of command and option after the end of the suboption and the print of suboption end.
