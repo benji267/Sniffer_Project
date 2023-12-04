@@ -8,6 +8,9 @@ void print_application(int source, int destination){
     else if(source == HTTP || destination==HTTP){
         printf("Following Application: HTTP\n");
     }
+    else if(source == POP3 || destination==POP3){
+        printf("Following Application: POP3\n");
+    }
 
     return ;
     
@@ -20,6 +23,9 @@ int app_value(int source, int destination){
 
     else if(source == HTTP || destination==HTTP){
         return HTTP;
+    }
+    else if(source == POP3 || destination==POP3){
+        return POP3;
     }
     return -1;
 }

@@ -66,7 +66,7 @@ void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_
                 printf("\n");
             }
             break;
-        /*case 6:
+        case 6:
             uint16_t size_telnetv6 = ntohs(((struct iphdr*)(packet + sizeof(struct ether_header)))->tot_len) - sizeof(struct ip6_hdr) - sizeof(struct tcphdr) - *options_length;
 
             printf("Size of Telnet packet: %d\n",size_telnetv6);
@@ -123,7 +123,7 @@ void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_
             for(int i=0;i<6;i++){
                 printf("\n");
             }
-            break;*/
+            break;
 
 
         default:

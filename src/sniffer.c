@@ -71,6 +71,9 @@ int main(int argc, char* argv[]){
                                 http(packet, verbosity,4,&options_length);
                                 break;
 
+                            case POP3:
+                                break;
+
                             default:
                                 break;
                         }
@@ -101,6 +104,9 @@ int main(int argc, char* argv[]){
                                 break;
                             case HTTP:
                                 http(packet, verbosity,4,&options_length);
+                                break;
+
+                            case POP3:
                                 break;
                             default:
                                 break;

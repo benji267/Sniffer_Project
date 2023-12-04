@@ -13,6 +13,7 @@
 
 #define TELNET 23
 #define HTTP 80
+#define POP3 110
 
 
 /**
