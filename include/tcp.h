@@ -14,6 +14,8 @@
 #define TELNET 23
 #define HTTP 80
 #define POP3 110
+#define IMAP 143
+#define DNS 53
 
 
 /**

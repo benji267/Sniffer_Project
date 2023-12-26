@@ -1,4 +1,4 @@
-#include "ethernet.h"
+#include "sniffer.h"
 #include "ip.h"
 #include "arp.h"
 #include "icmp.h"
@@ -7,6 +7,17 @@
 #include "sctp.h"
 #include "telnet.h"
 #include "http.h"
+#include "pop3.h"
+
+
+void example_packet(const unsigned char* packet,int verbose){
+    ethernet(packet, verbose);
+    ip(packet, verbose);
+    uint16_t options_length=0;
+    tcp(packet, verbose,4,&options_length);
+    http(packet, 4,4,&options_length);
+    return;
+}
 
 
 int main(int argc, char* argv[]){
@@ -16,15 +27,15 @@ int main(int argc, char* argv[]){
         return(1);
     }
 
-    //char *interface = NULL;
+    char *interface = NULL;
     char *offlineFile=NULL;
     //char *filter=NULL;
     int verbosity;
 
     for(int i=1; i<argc; i++){
-        /*if(strcmp(argv[i],"-i")==0){
+        if(strcmp(argv[i],"-i")==0){
             interface = argv[i+1];
-        }*/
+        }
         if(strcmp(argv[i],"-o")==0){
             offlineFile = argv[i+1];
         }
@@ -40,10 +51,25 @@ int main(int argc, char* argv[]){
     char errbuf[PCAP_ERRBUF_SIZE];
     struct pcap_pkthdr header;
     const unsigned char *packet;
-    handle = pcap_open_offline(offlineFile, errbuf);
-    if (handle == NULL) {
-        fprintf(stderr,"Couldn't open pcap file %s: %s\n", "test.pcap", errbuf);
-        return(2);
+    if(interface!=NULL){
+        handle = pcap_open_live(interface, BUFSIZ, 1, 1000, errbuf);
+
+        if (handle == NULL) {
+        fprintf(stderr,"Couldn't open interface %s: %s\n", interface, errbuf);
+        return -1;
+        }
+    }
+    else if(offlineFile!=NULL){
+        handle = pcap_open_offline(offlineFile, errbuf);
+
+        if (handle == NULL) {
+        fprintf(stderr,"Couldn't open pcap file %s: %s\n", offlineFile, errbuf);
+        return -1;
+    }
+    }
+    else{
+        example_packet(fakeFrame,verbosity);
+        return 0;
     }
 
     while((packet = pcap_next(handle, &header))){
@@ -72,6 +98,7 @@ int main(int argc, char* argv[]){
                                 break;
 
                             case POP3:
+                                pop3(packet, verbosity,4,&options_length);
                                 break;
 
                             default:
@@ -100,13 +127,14 @@ int main(int argc, char* argv[]){
                         application=tcp(packet, verbosity,6,&options_length);
                         switch(application){
                             case TELNET:
-                                telnet(packet, verbosity,4,&options_length);
+                                telnet(packet, verbosity,6,&options_length);
                                 break;
                             case HTTP:
-                                http(packet, verbosity,4,&options_length);
+                                http(packet, verbosity,6,&options_length);
                                 break;
 
                             case POP3:
+                                pop3(packet, verbosity,6,&options_length);
                                 break;
                             default:
                                 break;

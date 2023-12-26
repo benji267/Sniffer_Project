@@ -12,6 +12,17 @@ void print_application(int source, int destination){
         printf("Following Application: POP3\n");
     }
 
+    else if(source == IMAP || destination==IMAP){
+        printf("Following Application: IMAP\n");
+    }
+
+    else if(source == DNS || destination==DNS){
+        printf("Following Application: DNS\n");
+    }
+    else{
+        printf("Following Application: Unknown\n");
+    }
+
     return ;
     
 }
@@ -27,6 +38,15 @@ int app_value(int source, int destination){
     else if(source == POP3 || destination==POP3){
         return POP3;
     }
+
+    else if(source == IMAP || destination==IMAP){
+        return IMAP;
+    }
+
+    else if(source == DNS || destination==DNS){
+        return DNS;
+    }
+    
     return -1;
 }
 
@@ -265,7 +285,7 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
 
     if(verbose>1){
         printf("Sequence Number: %u\n", ntohl(tcp_header->seq));
-        printf("Acknowledgment Number: %d\n", ntohl(tcp_header->ack_seq));
+        printf("Acknowledgment Number: %u\n", ntohl(tcp_header->th_ack));
         printf("Data Offset: %d\n", tcp_header->doff);
         printf("Reserved: %d\n", tcp_header->res1);
         printf("NS: %d\n", tcp_header->res2);

@@ -7,6 +7,8 @@
         "getopt.h": "c",
         "sctp.h": "c",
         "features.h": "c",
-        "telnetfiles.h": "c"
+        "telnetfiles.h": "c",
+        "pop3.h": "c",
+        "sniffer.h": "c"
     }
 }
