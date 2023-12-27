@@ -8,8 +8,10 @@ void http(const unsigned char* packet, int verbose, int type,uint16_t *option_le
 
     //special case if we don't indicate any option, we analyze a special packet
     //So to differentiate this special case, i use an not usual value of verbose.
-    if(verbose==4){
+    if(verbose>=4){
         size_http=46;
+        //I substract 3 to verbose to have the same verbose level as the other protocols.
+        verbose-=3;
     }
 
     printf("Size of HTTP packet: %d\n",size_http);

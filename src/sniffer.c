@@ -8,14 +8,15 @@
 #include "telnet.h"
 #include "http.h"
 #include "pop3.h"
-
+#include "dns.h"
 
 void example_packet(const unsigned char* packet,int verbose){
     ethernet(packet, verbose);
     ip(packet, verbose);
     uint16_t options_length=0;
     tcp(packet, verbose,4,&options_length);
-    http(packet, 4,4,&options_length);
+    verbose+=3;
+    http(packet, verbose,4,&options_length);
     return;
 }
 
@@ -83,7 +84,13 @@ int main(int argc, char* argv[]){
                         icmp(packet, verbosity,4);
                         break;
                     case IPPROTO_UDP:
-                        udp(packet, verbosity,4);
+                        int app;
+                        app=udp(packet, verbosity,4);
+                        switch(app){
+                            case DNS:
+                                dns(packet,verbosity,4,0,1);
+                                break;
+                        }
                         break;
                     case IPPROTO_TCP:
                         int application;

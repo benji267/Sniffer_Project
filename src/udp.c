@@ -1,68 +1,99 @@
 #include "udp.h"
 
-
-void print_udpv4(const unsigned char* packet, int verbose, const struct udphdr *udp_header){
-
-    printf("Source Port: %d, ", ntohs(udp_header->source));
-    printf("Destination Port: %d\n", ntohs(udp_header->dest));
-    printf("\n");
-
-    if(verbose>1){
-        printf("Length: %d\n", ntohs(udp_header->len));
-        printf("Checksum: 0x%x\n", ntohs(udp_header->check));
-        printf("\n");
+int udp_application(int source, int destination){
+    if(source==DNS || destination==DNS){
+        return DNS;
     }
-    if(verbose>2){
-        printf("Reste du paquet UDP: \n");
-        for(int i=0; i<8; i++){
-            printf("%x ", packet[sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct udphdr) + i]);
-        }
-        printf("\n");
+    else if(source==BOOTP || destination==BOOTP){
+        return BOOTP;
     }
-} 
-
-void print_udpv6(const unsigned char* packet, int verbose, const struct udphdr *udp_header){
-
-    printf("Source Port: %d, ", ntohs(udp_header->source));
-    printf("Destination Port: %d\n", ntohs(udp_header->dest));
-    printf("\n");
-
-    if(verbose>1){
-        printf("Length: %d\n", ntohs(udp_header->len));
-        printf("Checksum: 0x%x\n", ntohs(udp_header->check));
-        printf("\n");
+    else if(source==DHCP || destination==DHCP){
+        return DHCP;
     }
-    if(verbose>2){
-        printf("Reste du paquet UDP: \n");
-        for(int i=0; i<8; i++){
-            printf("%x ", packet[sizeof(struct ether_header) + sizeof(struct ip6_hdr) + sizeof(struct udphdr) + i]);
-        }
-        printf("\n");
+    else{
+        return -1;
     }
 }
 
-void udp(const unsigned char* packet, int verbose, int type){
+
+
+void udp_print_application(int source, int destination){
+    if(source==DNS || destination==DNS){
+        printf("Following application: DNS\n");
+    }
+    else if(source==BOOTP || destination==BOOTP){
+        printf("Following application: BOOTP/DHCP\n");
+    }
+    else if(source==DHCP || destination==DHCP){
+        printf("Following application: BOOTP/DHCP\n");
+    }
+    else{
+        printf("Unknown\n");
+    }
+    return ;
+}
+
+int print_udpv4(const unsigned char* packet, int verbose, const struct udphdr *udp_header){
+    
+    printf("Source Port: %d, ", ntohs(udp_header->source));
+    printf("Destination Port: %d\n", ntohs(udp_header->dest));
+    printf("\n");
+    int application_protocol = udp_application(ntohs(udp_header->source), ntohs(udp_header->dest));
+
+    if(verbose>1){
+        printf("Length: %d\n", ntohs(udp_header->len));
+        printf("Checksum: 0x%x\n", ntohs(udp_header->check));
+        printf("\n");
+    }
+    if(verbose>2){
+        udp_print_application(ntohs(udp_header->source), ntohs(udp_header->dest));
+        printf("\n");
+    }
+    return application_protocol;
+} 
+
+int print_udpv6(const unsigned char* packet, int verbose, const struct udphdr *udp_header){
+
+    printf("Source Port: %d, ", ntohs(udp_header->source));
+    printf("Destination Port: %d\n", ntohs(udp_header->dest));
+    printf("\n");
+    int application_protocol = udp_application(ntohs(udp_header->source), ntohs(udp_header->dest));
+    if(verbose>1){
+        printf("Length: %d\n", ntohs(udp_header->len));
+        printf("Checksum: 0x%x\n", ntohs(udp_header->check));
+        printf("\n");
+    }
+    if(verbose>2){
+        udp_print_application(ntohs(udp_header->source), ntohs(udp_header->dest));
+        printf("\n");
+    }
+    return application_protocol;
+}
+
+int udp(const unsigned char* packet, int verbose, int type){
 
     switch(type){
         case 4:
             const struct udphdr *udp_header = (struct udphdr*)(packet + sizeof(struct ether_header) + sizeof(struct iphdr));
             printf("Protocol UDPV4: \n");
-            print_udpv4(packet, verbose, udp_header);
+            int app=print_udpv4(packet, verbose, udp_header);
             for(int i=0;i<6;i++){
                 printf("\n");
             }
+            return app;
             break;
         case 6:
             udp_header = (struct udphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
             printf("Protocol UDPV6: \n");
-            print_udpv6(packet, verbose, udp_header);
+            int appv6=print_udpv6(packet, verbose, udp_header);
             for(int i=0;i<6;i++){
                 printf("\n");
             }
+            return appv6;
             break;
         default:
             printf("Unknown\n");
             break;
     }
-    return ;
+    return -1;
 }

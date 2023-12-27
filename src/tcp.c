@@ -352,12 +352,12 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
 
 
 int tcp(const unsigned char* packet, int verbose, int type, uint16_t *options_length){
-    int source_port;
+    int app;
     switch(type){
         case 4:
             const struct tcphdr *tcp_header = (struct tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct iphdr));
             printf("Protocol TCPV4: \n");
-            source_port=print_tcpv4(packet, verbose, tcp_header, options_length);
+            app=print_tcpv4(packet, verbose, tcp_header, options_length);
             for(int i=0;i<6;i++){
                 printf("\n");
             }
@@ -366,11 +366,11 @@ int tcp(const unsigned char* packet, int verbose, int type, uint16_t *options_le
         case 6:
             const struct tcphdr *tcp_header6 = (struct tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
             printf("Protocol TCPV6: \n");
-            source_port=print_tcpv6(packet, verbose, tcp_header6, options_length);
+            app=print_tcpv6(packet, verbose, tcp_header6, options_length);
             for(int i=0;i<6;i++){
                 printf("\n");
             }
             break;
     }
-    return source_port;
+    return app;
 }
