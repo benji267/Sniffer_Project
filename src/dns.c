@@ -1,11 +1,26 @@
 #include "dns.h"
 
 
+void return_label(const unsigned char* packet,int label_position){
+    int length=packet[label_position];
+    for(int i=0;i<length;i++){
+        if(isprint(packet[label_position+i+1])){
+            printf("%c",packet[label_position+i+1]);
+        }
+        else{
+            printf(".");
+        }
+    }
+    return ;
+}
 
-void print_answer(const unsigned char* packet,uint16_t type,int data_length){
+
+void print_answer(const unsigned char* initial_packet,const unsigned char* packet,uint16_t type,int data_length,bool specialisation){
     switch(type){
         case 1:
-            printf("addr ");
+            if(!specialisation){
+                printf("addr ");
+            }
             for(int i=0;i<data_length;i++){
                 printf("%u",packet[i]);
                 if(i!=data_length-1){
@@ -15,128 +30,195 @@ void print_answer(const unsigned char* packet,uint16_t type,int data_length){
             printf("\n");
             break;
         case 2:
-            printf("name server");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf  ("name server");
+            }
+            for(
+                int i=0;i<data_length-1;i++){
                 if(isprint(packet[i])){
                     printf("%c",packet[i]);
                 }
                 else{
                     printf(".");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
                 }
             }
             printf("\n");
             break;
         case 3:
-            printf("mail destination ");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf("mail destination ");
+            }
+            for(int i=0;i<data_length-1;i++){
                 if(isprint(packet[i])){
                     printf("%c",packet[i]);
                 }
                 else{
                     printf(".");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
             break;
         case 4:
-            printf("mail forwarder ");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf("mail forwarder ");
+            }
+            for(int i=0;i<data_length-1;i++){
                 if(isprint(packet[i])){
                     printf("%c",packet[i]);
                 }
                 else{
                     printf(".");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
             break;
         case 5:
-            printf("cname ");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf("cname ");
+            }
+            packet++;
+            for(int i=0;i<data_length-1;i++){
                 if(isprint(packet[i])){
                     printf("%c",packet[i]);
                 }
                 else{
                     printf(".");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
             break;
         case 6:
-            printf("primary name server ");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf("primary name server ");
+            }
+            for(int i=0;i<data_length-1;i++){
                 if(isprint(packet[i])){
                     printf("%c",packet[i]);
                 }
                 else{
                     printf(".");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
             break;
         case 12:
-            printf("ptr ");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf("ptr ");
+            }
+            for(int i=0;i<data_length-1;i++){
                 if(isprint(packet[i])){
                     printf("%c",packet[i]);
                 }
                 else{
                     printf(".");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
             break;
         case 15:
-            printf("mail exchange ");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf("mail exchange ");
+            }
+            for(int i=0;i<data_length-1;i++){
                 if(isprint(packet[i])){
                     printf("%c",packet[i]);
                 }
                 else{
                     printf(".");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
             break;
         case 16:
-            printf("txt ");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf("txt ");
+            }
+            for(int i=0;i<data_length-1;i++){
                 if(isprint(packet[i])){
                     printf("%c",packet[i]);
                 }
                 else{
                     printf(".");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
             break;
 
         case 28:
-            printf("addr ");
+            if(!specialisation){
+                printf("addr ");
+            }
             for(int i=0;i<data_length;i++){
                 printf("%x",packet[i]);
                 if(i!=data_length-1){
                     printf(":");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
             break;
         case 251:
-            printf("ixfr ");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf("ixfr ");
+            }
+            for(int i=0;i<data_length-1;i++){
                 printf("%x",packet[i]);
                 if(i!=data_length-1){
                     printf(":");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
             break;
         case 252:
-            printf("axfr ");
-            for(int i=0;i<data_length;i++){
+            if(!specialisation){
+                printf("axfr ");
+            }
+            for(int i=0;i<data_length-1;i++){
                 printf("%x",packet[i]);
                 if(i!=data_length-1){
                     printf(":");
+                }
+                if(packet[i]==0xc0){
+                    return_label(initial_packet,packet[i+1]);
+                    break;
                 }
             }
             printf("\n");
@@ -295,8 +377,55 @@ int getQR(unsigned char byte){
     return byte >> 7;
 }
 
+void print_answerv3(uint16_t type){
+    switch(type){
+        case 1:
+            printf("Adress: ");
+            break;
+        case 2:
+            printf("Name server: ");
+            break;
+        case 3:
+            printf("Mail destination: ");
+            break;
+        case 4:
+            printf("Mail forwarder: ");
+            break;
+        case 5:
+            printf("CNAME: ");
+            break;
+        case 6:
+            printf("Primary name server: ");
+            break;
+        case 12:
+            printf("PTR: ");
+            break;
+        case 15:
+            printf("Mail exchange: ");
+            break;
+        case 16:
+            printf("TXT: ");
+            break;
+        case 28:
+            printf("Adress: ");
+            break;
+        case 251:
+            printf("IXFR: ");
+            break;
+        case 252:
+            printf("AXFR: ");
+            break;
+        default:
+            printf("Unknown: ");
+            break;
+    }
+    return ;
+}
+        
 
-void dns_print_answers(const unsigned char *packet, int verbose,char* name){
+
+
+void dns_print_answers(const unsigned char* initial_packet,const unsigned char *packet, int verbose,char* name){
     //I use packet_v3 to not modify the packet pointer and to treat the verbose level 3
     const unsigned char *packet_v3=packet;
     printf("type ");
@@ -310,12 +439,47 @@ void dns_print_answers(const unsigned char *packet, int verbose,char* name){
     packet+=5;
     int length=packet[0]*256 + packet[1];
     packet+=2;
-    print_answer(packet,*packet_v3,length);
+    print_answer(initial_packet,packet,*packet_v3,length,false);
+    packet+=length;
+    if(verbose==3){
+        printf("        Name: %s\n", name);
+        uint16_t type=*packet_v3;
+        printf("        Type: ");
+        print_typev3(packet_v3,*packet_v3);
+        printf("        Class: ");
+        packet_v3+=2;
+        print_classv3(*packet_v3);
+        packet_v3++;
+        int ttl=packet_v3[0]*16777216 + packet_v3[1]*65536 + packet_v3[2]*256 + packet_v3[3];
+        printf("        Time to live: %d", ttl);
+        if(ttl>60){
+            int minutes=ttl/60;
+            int seconds=ttl%60;
+            printf(" (%d minutes, %d seconds)\n", minutes, seconds);
+        }
+        else{
+            printf(" (%d seconds)\n", ttl);
+        }
+        packet_v3+=4;
+        int data_length=packet_v3[0]*256 + packet_v3[1];
+        printf("        Data length: %d\n", data_length);
+        packet_v3+=2;
+        printf("        ");
+        print_answerv3(type);
+        print_answer(initial_packet,packet_v3,type,data_length,true);
+    }
 
+    //Now I start a loop for each answer to finish the answer section
+    while(*packet!=0x00){
+        if(*packet==0xc0){
+            return_label(initial_packet,packet[1]);
+            packet+=2;
+        }
+    }
 }
 
 
-void dns_print_queries(const unsigned char *packet, int verbose,bool answer){
+void dns_print_queries(const unsigned char* initial_packet,const unsigned char *packet, int verbose,bool answer){
     //I use packet_v3 to not modify the packet pointer and to treat the verbose level 3
     const unsigned char *packet_v3=packet;
     //create a buffer to store the name
@@ -386,12 +550,13 @@ void dns_print_queries(const unsigned char *packet, int verbose,bool answer){
         packet+=2;
         printf("    Answers\n");
         printf("        %s: ", name);
-        dns_print_answers(packet, verbose, name);
+        dns_print_answers(initial_packet,packet, verbose, name);
     }
 
 }
 
 void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
+    const unsigned char *initial_packet=packet;
     printf("    Transaction ID: 0x%02x%02x\n", packet[0], packet[1]);
     printf("    Flags: 0x%02x%02x", packet[2], packet[3]);
     int flags=packet[2]*256 + packet[3];
@@ -551,7 +716,7 @@ void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
     //Before I don't do that to avoid to modify the packet pointer and to underline the constant length of the header
     //I add 13 not 12 to ignore the first byte of the first query 
     
-    dns_print_queries(packet, verbose, answer);
+    dns_print_queries(initial_packet,packet, verbose, answer);
     
 
     return ;

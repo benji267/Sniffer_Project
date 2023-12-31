@@ -26,9 +26,10 @@ void print_typev3(const unsigned char *packet,uint16_t type);
  * @param packet The packet to print
  * @param type The type to print
  * @param data_length The length of the data
+ * @param specialisation The specialisation of the DNS packet
  * 
  */
-void print_answer(const unsigned char* packet,uint16_t type,int data_length);
+void print_answer(const unsigned char *initial_packet,const unsigned char* packet,uint16_t type,int data_length,bool specialisation);
 
 
 /**
@@ -54,8 +55,9 @@ void print_typev2(uint16_t type);
  * @param packet The packet to print
  * @param verbose The verbose mode
  * @param name The name of the DNS server
+ * @param initial_packet The initial packet
  */
-void dns_print_answers(const unsigned char *packet, int verbose,char* name);
+void dns_print_answers(const unsigned char *initial_packet,const unsigned char *packet, int verbose,char* name);
 
 
 /**
@@ -64,9 +66,9 @@ void dns_print_answers(const unsigned char *packet, int verbose,char* name);
  * @param packet  The packet to parse
  * @param verbose  Verbose mode
  * @param answer  If the packet is an answer or not
- * 
+ * @param initial_packet  The initial packet
  */
-void dns_print_queries(const unsigned char *packet, int verbose,bool answer);
+void dns_print_queries(const unsigned char *initial_packet,const unsigned char *packet, int verbose,bool answer);
 
 
 /**

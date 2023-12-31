@@ -34,17 +34,7 @@ void udp_print_application(int source, int destination);
  * @param verbose
  * @param udp_header
  */
-int print_udpv4(const unsigned char* packet, int verbose, const struct udphdr *udp_header);
-
-/**
- * @brief Display UDPV6 header.
- * 
- * @param packet
- * @param verbose
- * @param udp_header
- */
-int print_udpv6(const unsigned char* packet, int verbose, const struct udphdr *udp_header);
-
+int print_udp(const unsigned char* packet, int verbose, const struct udphdr *udp_header);
 
 /**
  * @brief Display UDP header.

@@ -13,7 +13,7 @@
 
 
 /**
- * @brief fonction qui permet d'afficher le type de protocole ethernet.
+ * @brief function that prints the type of material.
  * 
  * @param type
  */
@@ -22,7 +22,7 @@ void print_type_ethernet(int type);
 
 
 /**
- * @brief fonction permet d'afficher les informations de la trame ethernet selon la valeur de verbose.
+ * @brief function that prints the ethernet packet with the verbose level and the same display as wireshark.
  * 
  * @param packet
  * @param verbose

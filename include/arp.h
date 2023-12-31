@@ -6,9 +6,15 @@
 
 
 
+/**
+ * @brief Display the type of material.
+ * 
+ * @param type 
+ */
+void print_hardware_type(int type);
 
 /**
- * @brief Affiche le type de protocole ARP.
+ * @brief Display the ARP opcode.
  * 
  * @param opcode
  */
@@ -16,15 +22,7 @@ void print_arp_opcode(int opcode);
 
 
 /**
- * @brief Affiche les informations de la couche ARP
- * 
- * @param packet 
- */
-void print_verb_one(const unsigned char * packet);
-
-
-/**
- * @brief Affiche les informations de la couche ARP.
+ * @brief Display the ARP packet with the verbose level and the same display as wireshark.
  * 
  * @param packet 
  * @param verbose 

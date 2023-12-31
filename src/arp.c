@@ -1,8 +1,8 @@
 #include "arp.h"
 
+//These files don't have difficult functions, they just display the information.
 
-
-void print_harware_type(int type){
+void print_hardware_type(int type){
     switch(type){
         case ARPHRD_NETROM:
             printf("NET/ROM ");
@@ -20,22 +20,22 @@ void print_harware_type(int type){
 void print_arp_opcode(int opcode){
     switch(opcode){
         case ARPOP_REQUEST:
-            printf("ARP Request");
+            printf("request");
             break;
         case ARPOP_REPLY:
-            printf("ARP Reply");
+            printf("reply");
             break;
         case ARPOP_RREQUEST:
-            printf("RARP Request");
+            printf("rarp request");
             break;
         case ARPOP_RREPLY:
-            printf("RARP Reply");
+            printf("rarp reply");
             break;
         case ARPOP_InREQUEST:
-            printf("InARP Request");
+            printf("InARP request");
             break;
         case ARPOP_InREPLY:
-            printf("InARP Reply");
+            printf("InARP reply");
             break;
         case ARPOP_NAK:
             printf("NAK");
@@ -51,69 +51,40 @@ void print_arp_opcode(int opcode){
 
 
 int arp(const unsigned char *packet,int verbose){
-    printf("Protocol ARP: ");
     const struct arphdr *arp_header = (struct arphdr*)(packet+14);
-
-    printf("Sender MAC -> Target MAC: ");
-    for(int i=0;i<6;i++){
-        printf("%02x", packet[22+i]);
-        if(i<5){
-            printf(":");
-        }
-    }
-    printf(" -> ");
-    for(int i=0;i<6;i++){
-        printf("%02x", packet[32+i]);
-        if(i<5){
-            printf(":");
-        }
-    }
-
-    printf(". Sender IP -> Target IP: ");
-    for(int i=0;i<4;i++){
-        printf("%d", packet[28+i]);
-        if(i<3){
-            printf(".");
-        }
-    }
-    printf(" -> ");
-    for(int i=0;i<4;i++){
-        printf("%d", packet[38+i]);
-        if(i<3){
-            printf(".");
-        }
-    }
-    printf("\n");
-    
+    printf("Adress Resolution Protocol(");
+    print_arp_opcode(ntohs(arp_header->ar_op));
+    printf(")\n");
 
     if(verbose>1){
-        printf("\n");
-        printf("Opcode: ");
-        print_arp_opcode(ntohs(arp_header->ar_op));
-        printf("(%d)\n", ntohs(arp_header->ar_op));
-        
-        
-    }
-    
-    if(verbose>2){
-        printf("\n");
-        printf("Hardware type: ");
-        print_harware_type(ntohs(arp_header->ar_hrd));
+        printf(" |- Hardware type: ");
+        print_hardware_type(ntohs(arp_header->ar_hrd));
         printf("(%d)\n", ntohs(arp_header->ar_hrd));
-        printf("Protocol type: ");
+        printf(" |- Protocol type: ");
         print_type_ethernet(ntohs(arp_header->ar_pro));
-        printf("(0x%04X)\n", ntohs(arp_header->ar_pro));
-        printf("Hardware size: %d\n", arp_header->ar_hln);
-        printf("Protocol size: %d\n", arp_header->ar_pln);
         printf("\n");
+        printf(" |- Hardware size: %d\n", arp_header->ar_hln);
+        printf(" |- Protocol size: %d\n", arp_header->ar_pln);
+        printf(" |- Opcode: ");
+        print_arp_opcode(ntohs(arp_header->ar_op));
+        printf(" (%d)\n", ntohs(arp_header->ar_op));
+        printf(" |- Sender MAC address: %02x:%02x:%02x:%02x:%02x:%02x", 
+            packet[22], packet[23], packet[24], packet[25], packet[26], packet[27]);
+        printf(" (%02x:%02x:%02x:%02x:%02x:%02x)\n", 
+            packet[22], packet[23], packet[24], packet[25], packet[26], packet[27]);
+        printf(" |- Sender IP address: %d.%d.%d.%d\n",
+            packet[28], packet[29], packet[30], packet[31]);
+        printf(" |- Target MAC address: %02x:%02x:%02x:%02x:%02x:%02x",
+            packet[32], packet[33], packet[34], packet[35], packet[36], packet[37]);
+        printf(" (%02x:%02x:%02x:%02x:%02x:%02x)\n",
+            packet[32], packet[33], packet[34], packet[35], packet[36], packet[37]);
+        printf(" |- Target IP address: %d.%d.%d.%d\n",
+            packet[38], packet[39], packet[40], packet[41]);
+    }   
+    //There no verbose level 3 for arp because there is no more information to display
+    //and zero playload.
 
-    }
-    
-
-
-    for(int i=0;i<6;i++){
-        printf("\n");
-    }
+    printf("\n");
 
     return 1;
 }

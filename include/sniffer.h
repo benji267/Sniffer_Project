@@ -1,4 +1,10 @@
 #include "ethernet.h"
+
+
+void separe_trame(){
+ printf("-------------------------------------------------------------------------------------------------------------------------------------\n");
+}
+
 unsigned char fakeFrame[] = {
         // Ethernet Header
         0x00, 0x11, 0x22, 0x33, 0x44, 0x55, // Destination MAC

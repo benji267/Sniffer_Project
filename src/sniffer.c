@@ -158,6 +158,7 @@ int main(int argc, char* argv[]){
                 printf("Unknown\n");
                 break;
         }
+        separe_trame();
     }
     
 

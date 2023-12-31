@@ -38,30 +38,22 @@ void print_icmpv6_type(int type){
 
 
 void print_icmpv4(const unsigned char* packet,struct icmphdr *icmp_header, int verbose){
+    printf("Src: %s, ", inet_ntoa(*(struct in_addr*)&packet[14+12]));
+    printf("Dst: %s\n", inet_ntoa(*(struct in_addr*)&packet[14+16]));
     uint8_t icmp_type = ntohs(icmp_header->type);
-    printf("Type: %x ", icmp_type);
-    print_icmpv4_type(icmp_type);
     printf("\n");
 
     if(verbose>1){
-        printf("Code: %x\n", icmp_header->code);
-        printf("Checksum: 0x%x\n", ntohs(icmp_header->checksum));
-        printf("\n");
+        printf(" |- Type: %u ", icmp_type);
+        print_icmpv4_type(icmp_type);
+        printf(" |- Code: %u\n", icmp_header->code);
+        printf(" |- Checksum: 0x%x\n", ntohs(icmp_header->checksum));
+        printf(" |- Identifier (BE): %d (0x%04x)\n", ntohs(icmp_header->un.echo.id), ntohs(icmp_header->un.echo.id));
+        printf(" |- Identifier (LE): %d (0x%04x)\n", icmp_header->un.echo.id, icmp_header->un.echo.id);
+        printf(" |- Sequence Number (BE): %d (0x%04x)\n", ntohs(icmp_header->un.echo.sequence), ntohs(icmp_header->un.echo.sequence));
+        printf(" |- Sequence Number (LE): %d (0x%04x)\n", icmp_header->un.echo.sequence, icmp_header->un.echo.sequence);
     }
-    if(verbose>2){
-        if(icmp_type == ICMP_ECHO || icmp_type == ICMP_ECHOREPLY){
-            printf("Identifier: %x\n", ntohs(icmp_header->un.echo.id));
-            printf("Sequence Number: %x\n", ntohs(icmp_header->un.echo.sequence));
-        }
-        else if(icmp_type == ICMP_DEST_UNREACH){
-            printf("Unused: %x\n", ntohs(icmp_header->un.gateway));
-        }
-        printf("Reste du paquet ICMP: \n");
-        for(int i=0; i<8; i++){
-            printf("%x ", packet[14+sizeof(struct iphdr)+i]);
-        }
-        printf("\n");
-    }
+    //There is no verbose>2 because there is no more information to display
     return ;
 }
 
@@ -94,26 +86,20 @@ void print_icmpv6(const unsigned char* packet,struct icmp6_hdr *icmp6_header, in
 
 
 void icmp(const unsigned char* packet, int verbose, int type){
+    printf("Internet Control Message Protocol, ");
     switch(type){
         case 4:
-            printf("Protocol ICMPV4: \n");
             struct icmphdr *icmp_header = (struct icmphdr*)(packet + sizeof(struct ether_header) + sizeof(struct iphdr));
             print_icmpv4(packet, icmp_header, verbose);
-            for(int i=0;i<6;i++){
-                printf("\n");
-            }
             break;
         case 6:
-            printf("Protocol ICMPV6: \n");
             struct icmp6_hdr *icmp6_header = (struct icmp6_hdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
             print_icmpv6(packet, icmp6_header, verbose);
-            for(int i=0;i<6;i++){
-                printf("\n");
-            }
             break;
         default:
             printf("Unknown\n");
             break;
     }
+    printf("\n");
     return ;
 }

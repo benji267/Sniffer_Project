@@ -9,6 +9,7 @@
         "features.h": "c",
         "telnetfiles.h": "c",
         "pop3.h": "c",
-        "sniffer.h": "c"
+        "sniffer.h": "c",
+        "arp.h": "c"
     }
 }
