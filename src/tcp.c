@@ -278,33 +278,38 @@ void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_o
 
 int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header, uint16_t *options_length){
     int application;
-    printf("Source Port: %d -> ", ntohs(tcp_header->source));
-    printf("Destination Port: %d\n", ntohs(tcp_header->dest));
+    printf("%d, ", ntohs(tcp_header->source));
+    printf("Dst Port: %d, ", ntohs(tcp_header->dest));
     application=app_value(ntohs(tcp_header->source), ntohs(tcp_header->dest));
     printf("\n");
 
     if(verbose>1){
-        printf("Sequence Number: %u\n", ntohl(tcp_header->seq));
-        printf("Acknowledgment Number: %u\n", ntohl(tcp_header->th_ack));
-        printf("Data Offset: %d\n", tcp_header->doff);
-        printf("Reserved: %d\n", tcp_header->res1);
-        printf("NS: %d\n", tcp_header->res2);
-        printf("Window Size: %d\n", ntohs(tcp_header->window));
-        printf("Checksum: 0x%x\n", ntohs(tcp_header->check));
-        printf("Urgent Pointer: %d\n", ntohs(tcp_header->urg_ptr));
-        print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
-        printf("\n");
-    }
-
-    if(verbose>2){
-        printf("Flags: 0x%x\n", tcp_header->th_flags);
-        printf ("URG=%x, ACK=%x, PSH=%x, RST=%x, SYN=%x, FIN=%x\n", tcp_header->urg, tcp_header->ack, tcp_header->psh, tcp_header->rst, tcp_header->syn, tcp_header->fin);
-        printf("\n");
-        if(tcp_header->doff > 5){
-            printf("Options: \n");
+        printf(" |- Source Port: %d\n", ntohs(tcp_header->source));
+        printf(" |- Destination Port: %d\n", ntohs(tcp_header->dest));
+        printf(" |- Sequence Number (raw): %u\n", ntohl(tcp_header->seq));
+        printf(" |- Acknowledgment Number (raw): %d\n", ntohl(tcp_header->ack_seq));
+        printf(" |- Header Length: %d bytes (%d)\n", tcp_header->doff*4, tcp_header->doff);
+        printf(" |- Flags: 0x%03x\n", tcp_header->th_flags);
+        if(verbose>2){
+            printf("     |- %s%s%s... .... = Reserved: %s\n", tcp_header->res1 & 0x80 ? "1" : "0", tcp_header->res1 & 0x40 ? "1" : "0", tcp_header->res1 & 0x20 ? "1" : "0", tcp_header->res1 & 0x10 ? "Set" : "Not set");
+            printf("     |- ...%s .... .... = Accurate ECN: %s\n", tcp_header->res1 & 0x08 ? "1" : "0", tcp_header->res1 & 0x04 ? "Set" : "Not set");
+            printf("     |- .... %s... .... = Congestion Window Reduced (CWR): %s\n", tcp_header->res1 & 0x02 ? "1" : "0", tcp_header->res1 & 0x02 ? "Set" : "Not set");
+            printf("     |- .... .%s.. .... = ECN-Echo: %s\n", tcp_header->res1 & 0x01 ? "1" : "0", tcp_header->res1 & 0x01 ? "Set" : "Not set");
+            printf("     |- .... ..%s. .... = Urgent: %s\n", tcp_header->urg ? "1" : "0", tcp_header->urg ? "Set" : "Not set");
+            printf("     |- .... ...%s .... = Acknowledgment: %s\n", tcp_header->ack ? "1" : "0", tcp_header->ack ? "Set" : "Not set");
+            printf("     |- .... .... %s... = Push: %s\n", tcp_header->psh ? "1" : "0", tcp_header->psh ? "Set" : "Not set");
+            printf("     |- .... .... .%s.. = Reset: %s\n", tcp_header->rst ? "1" : "0", tcp_header->rst ? "Set" : "Not set");
+            printf("     |- .... .... ..%s. = Syn: %s\n", tcp_header->syn ? "1" : "0", tcp_header->syn ? "Set" : "Not set");
+            printf("     |- .... .... ...%s = Fin: %s\n", tcp_header->fin ? "1" : "0", tcp_header->fin ? "Set" : "Not set");
         }
+        printf(" |- Window Size: %d\n", ntohs(tcp_header->window));
+        printf(" |- Checksum: 0x%x\n", ntohs(tcp_header->check));
+        printf(" |- Urgent Pointer: %d\n", ntohs(tcp_header->urg_ptr));
+        if(tcp_header->doff > 5){
+            printf(" |- Options: (%ld bytes)\n", (tcp_header->doff*4)-sizeof(struct tcphdr));
+        }
+        //NB enlever l'option  dans l'appelle d'option j'y ai accès direct au dessus.
         printf("\n");
-
     }
     //I need the options length in each verbose level so I pass it as a pointer and I put a condition on verbose in the print_option function.
     if(tcp_header->doff > 5){
@@ -353,10 +358,10 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
 
 int tcp(const unsigned char* packet, int verbose, int type, uint16_t *options_length){
     int app;
+    printf("Transmission Control Protocol, Src Port: ");
     switch(type){
         case 4:
             const struct tcphdr *tcp_header = (struct tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct iphdr));
-            printf("Protocol TCPV4: \n");
             app=print_tcpv4(packet, verbose, tcp_header, options_length);
             for(int i=0;i<6;i++){
                 printf("\n");
@@ -365,7 +370,6 @@ int tcp(const unsigned char* packet, int verbose, int type, uint16_t *options_le
 
         case 6:
             const struct tcphdr *tcp_header6 = (struct tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
-            printf("Protocol TCPV6: \n");
             app=print_tcpv6(packet, verbose, tcp_header6, options_length);
             for(int i=0;i<6;i++){
                 printf("\n");

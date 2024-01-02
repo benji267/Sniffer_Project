@@ -54,6 +54,7 @@ int print_udp(const unsigned char* packet, int verbose, const struct udphdr *udp
     return application_protocol;
 }
 
+// Principal function which calls the other functions and parse the packet for the UDP layer.
 int udp(const unsigned char* packet, int verbose, int type){
     printf("User Datagram Protocol, Src Port: ");
     switch(type){
@@ -71,5 +72,6 @@ int udp(const unsigned char* packet, int verbose, int type){
             printf("Unknown\n");
             break;
     }
+    printf("\n");
     return -1;
 }

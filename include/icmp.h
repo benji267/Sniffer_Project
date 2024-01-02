@@ -2,7 +2,7 @@
 #include "ip.h"
 #include <netinet/ip_icmp.h>
 #include <netinet/icmp6.h>
-
+#include <stdbool.h>
 
 /**
  * @brief Displays the ICMPV4 protocol type.
