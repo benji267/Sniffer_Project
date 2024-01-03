@@ -9,6 +9,7 @@
 #include "http.h"
 #include "pop3.h"
 #include "dns.h"
+#include "smtp.h"
 
 void example_packet(const unsigned char* packet,int verbose){
     ethernet(packet, verbose);
@@ -106,6 +107,12 @@ int main(int argc, char* argv[]){
 
                             case POP3:
                                 pop3(packet, verbosity,4,&options_length);
+                                break;
+                            case DNS:
+                                dns(packet,verbosity,4,&options_length,0);
+                                break;
+                            case SMTP:
+                                smtp(packet,verbosity,4,&options_length);
                                 break;
 
                             default:

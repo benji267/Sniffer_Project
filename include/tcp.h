@@ -16,6 +16,7 @@
 #define POP3 110
 #define IMAP 143
 #define DNS 53
+#define SMTP 25
 
 
 /**
@@ -42,10 +43,10 @@ int app_value(int source, int destination);
  * 
  * @param packet
  * @param offset
- * @param options_length
  * @param verbose
+ * @param version
  */
-void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *options_length, int verbose);
+void print_optionv4(const unsigned char *packet,uint8_t offset, int verbose, int version);
 
 
 /**
@@ -53,10 +54,9 @@ void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *options
  * 
  * @param packet
  * @param offset
- * @param options_length
  * @param verbose
  */
-void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *options_length, int verbose);
+void print_optionv6(const unsigned char *packet,uint8_t offset, int verbose);
 
 
 /**
@@ -66,8 +66,9 @@ void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *options
  * @param verbose 
  * @param tcp_header 
  * @param options_length
+ * @param version
  */
-int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header,uint16_t *options_length);
+int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header,uint16_t *options_length,int version);
 
 
 /**

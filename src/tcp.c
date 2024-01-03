@@ -1,32 +1,45 @@
 #include "tcp.h"
 
+//There not a lot of comments because there's a header for tcp so it's common utilisation of the header
+//In addition I get almost the same display as wireshark so I don't have weird display.
+
+// Bonus dislay for tcp 
 void print_application(int source, int destination){
     if(source == TELNET || destination==TELNET){
+        printf(" |- ");
         printf("Following Application: Telnet\n");
     }
 
     else if(source == HTTP || destination==HTTP){
+        printf(" |- ");
         printf("Following Application: HTTP\n");
     }
     else if(source == POP3 || destination==POP3){
+        printf(" |- ");
         printf("Following Application: POP3\n");
     }
 
-    else if(source == IMAP || destination==IMAP){
+    else if(source == IMAP || destination==IMAP){   
+        printf(" |- ");
         printf("Following Application: IMAP\n");
     }
 
     else if(source == DNS || destination==DNS){
+        printf(" |- ");
         printf("Following Application: DNS\n");
     }
-    else{
-        printf("Following Application: Unknown\n");
+    else if(source == SMTP || destination==SMTP){
+        printf(" |- ");
+        printf("Following Application: SMTP\n");
     }
+    
 
     return ;
     
 }
 
+//need the source and destination port to determine the application
+//return the application value for the switch case in the main
 int app_value(int source, int destination){
     if(source == TELNET || destination==TELNET){
         return TELNET;
@@ -46,237 +59,131 @@ int app_value(int source, int destination){
     else if(source == DNS || destination==DNS){
         return DNS;
     }
+    else if(source == SMTP || destination==SMTP){
+        return SMTP;
+    }
     
     return -1;
 }
 
 
 
-void print_optionv4(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length, int verbose){
-    const unsigned char *option = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr);
+void print_option(const unsigned char *packet,uint8_t offset, int verbose, int version){
+    uint16_t len;
+    //Depending on the version, the length of the header is different to get the right offset
+    if(version==4){
+        len=sizeof(struct iphdr);
+    }
+    else{
+        len=sizeof(struct ip6_hdr);
+    }
+    const unsigned char *option = packet + sizeof(struct ether_header) + len + sizeof(struct tcphdr);
     uint8_t kind, length;
-    while(option < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + offset){
-        
-        if(verbose>2){
-            printf("TCP Option - ");
-        }
+    while(option < packet + sizeof(struct ether_header) + len + offset){
+        // Print the option for each kind
+        printf(" |- TCP Option - ");
         kind = *option;
         switch(kind){
-
             case 0:
-                if(verbose>2){
-                    printf("End of Option List (EOL)\n");
+                printf("End of Option List (EOL)\n");
+                if(verbose>2){ 
+                    printf("     |- ");
                     printf("Kind: EOL (%d)\n", kind);
                 }
                 break;
             
-            case 1:
+            case 1: 
+                printf("No-Operation (NOP)\n");
                 if(verbose>2){
-                    printf("No-Operation (NOP)\n");
+                    printf("     |- ");
                     printf("Kind: No-Operation (%d)\n", kind);
                 }
-                *total_options_length+=1;
                 break;
 
             case 2: 
+                printf("Maximum segment size: %d bytes\n", ntohs(*(uint16_t*)(option + 2)));
                 if(verbose>2){
-                    printf("Maximum Segment Size (MSS)\n");
+                    printf("     |- ");
                     printf("Kind: Maximum Segment Size (%d)\n", kind);
-                }
-                length = *(option + 1);
-                if(verbose>2){
+                    length = *(option + 1);
+                    printf("     |- ");
                     printf("Length: %d\n", length);
+                    printf("     |- ");
                     printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
                 }
                 option+=LENMAXSEG-1;
-                *total_options_length+=length;
                 break;
             
             case 3:
+                printf("Window Scale: %d\n", (*(option + 2)));
                 if(verbose>2){
-                    printf("Window Scale (WSS)\n");
+                    printf("     |- ");
                     printf("Kind: Window Scale (%d)\n", kind);
-                }
-                length = *(option + 1);
-                if(verbose>2){
+                    length = *(option + 1);
+                    printf("     |- ");
                     printf("Length: %d\n", length);
-                    printf("Shift Count: %d\n", *(option + 2));
+                    printf("     |- ");
+                    printf("Shift count: %d\n", *(option + 2));
                 }
                 option+=LENWINDOW-1;
-                *total_options_length+=length;
                 break;
             
             case 4:
-
+                printf("SACK Permitted Option\n");
                 if(verbose>2){
-                    printf("SACK Permitted Option\n");
+                    printf("     |- ");
                     printf("Kind: SACK Permitted (%d)\n", kind);
-                }
-                length = *(option + 1);
-                if(verbose>2){
+                    length = *(option + 1);
+                    printf("     |- ");
                     printf("Length: %d\n", length);
                 }
                 option+=LEN_SACK_PERMITTED-1;
-                *total_options_length+=length;
                 break;
             
             case 5:
+                    printf("SACK Option\n");
                     if(verbose>2){
-                        printf("SACK Option\n");
+                        printf("     |- ");
                         printf("Kind: SACK (%d)\n", kind);
-                    }
-                    length = *(option + 1);
-                    if(verbose>2){
+                        length = *(option + 1);
+                        printf("     |- ");
                         printf("Length: %d\n", length);
                     }
-                    *total_options_length+=length;
                     break;
                 
             case 8:
+                printf("Timestamps\n");
                 if(verbose>2){
-                    printf("Timestamps Option\n");
+                    printf("     |- ");
                     printf("Kind: Timestamps (%d)\n", kind);
-                }
-                length = *(option + 1);
-                if(verbose>2){
+                    length = *(option + 1);
+                    printf("     |- ");
                     printf("Length: %d\n", length);
+                    printf("     |- ");
                     printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
+                    printf("     |- ");
                     printf("Timestamp Echo Reply: %d\n", ntohl(*(uint32_t*)(option + 6)));
                 }
                 option+=LEN_TIMESTAMP-1;
-                *total_options_length+=length;
                 break;
             
             default:
-                if(verbose>2){
-                    printf("%d Unknown\n", kind);
-                }
+                printf("%d Unknown\n", kind);
+                
                 break;
         }
         printf("\n");
         option++;
-    }
-    if(verbose>2){
-        printf("Total Options Length: %d bytes\n", *total_options_length);
-        printf("\n");
     }
 }
     
-void print_optionv6(const unsigned char *packet,uint8_t offset,uint16_t *total_options_length, int verbose){
-    const unsigned char *option = packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr) + sizeof(struct tcphdr);
-    uint8_t kind, length;
-    while(option < packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr) + offset){
-        
-        if(verbose>2){
-            printf("TCP Option - ");
-        }
-        kind = *option;
-        switch(kind){
-
-            case 0:
-                if(verbose>2){
-                    printf("End of Option List (EOL)\n");
-                    printf("Kind: EOL (%d)\n", kind);
-                }
-                break;
-            
-            case 1:
-                if(verbose>2){
-                    printf("No-Operation (NOP)\n");
-                    printf("Kind: No-Operation (%d)\n", kind);
-                }
-                *total_options_length+=1;
-                break;
-
-            case 2: 
-                if(verbose>2){
-                    printf("Maximum Segment Size (MSS)\n");
-                    printf("Kind: Maximum Segment Size (%d)\n", kind);
-                }
-                length = *(option + 1);
-                if(verbose>2){
-                    printf("Length: %d\n", length);
-                    printf("MSS Value: %d\n", ntohs(*(uint16_t*)(option + 2)));
-                }
-                option+=LENMAXSEG-1;
-                *total_options_length+=length;
-                break;
-            
-            case 3:
-                if(verbose>2){
-                    printf("Window Scale (WSS)\n");
-                    printf("Kind: Window Scale (%d)\n", kind);
-                }
-                length = *(option + 1);
-                if(verbose>2){
-                    printf("Length: %d\n", length);
-                    printf("Shift Count: %d\n", *(option + 2));
-                }
-                option+=LENWINDOW-1;
-                *total_options_length+=length;
-                break;
-            
-            case 4:
-
-                if(verbose>2){
-                    printf("SACK Permitted Option\n");
-                    printf("Kind: SACK Permitted (%d)\n", kind);
-                }
-                length = *(option + 1);
-                if(verbose>2){
-                    printf("Length: %d\n", length);
-                }
-                option+=LEN_SACK_PERMITTED-1;
-                *total_options_length+=length;
-                break;
-            
-            case 5:
-                    if(verbose>2){
-                        printf("SACK Option\n");
-                        printf("Kind: SACK (%d)\n", kind);
-                    }
-                    length = *(option + 1);
-                    if(verbose>2){
-                        printf("Length: %d\n", length);
-                    }
-                    *total_options_length+=length;
-                    break;
-                
-            case 8:
-                if(verbose>2){
-                    printf("Timestamps Option\n");
-                    printf("Kind: Timestamps (%d)\n", kind);
-                }
-                length = *(option + 1);
-                if(verbose>2){
-                    printf("Length: %d\n", length);
-                    printf("Timestamp Value: %d\n", ntohl(*(uint32_t*)(option + 2)));
-                    printf("Timestamp Echo Reply: %d\n", ntohl(*(uint32_t*)(option + 6)));
-                }
-                option+=LEN_TIMESTAMP-1;
-                *total_options_length+=length;
-                break;
-            
-            default:
-                if(verbose>2){
-                    printf("%d Unknown\n", kind);
-                }
-                break;
-        }
-        printf("\n");
-        option++;
-    }
-    if(verbose>2){
-        printf("Total Options Length: %d bytes\n", *total_options_length);
-        printf("\n");
-    }
-}
 
 
 
 
 
-int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header, uint16_t *options_length){
+
+int print_tcp(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header, uint16_t *options_length, int version){
     int application;
     printf("%d, ", ntohs(tcp_header->source));
     printf("Dst Port: %d, ", ntohs(tcp_header->dest));
@@ -284,6 +191,9 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
     printf("\n");
 
     if(verbose>1){
+        //Without the ISN I can't calculate the sequence number
+        //This ISN is the first sequence number of the connection and I analyse each packet independently
+        //So I print the raw value of the sequence number, ack number.
         printf(" |- Source Port: %d\n", ntohs(tcp_header->source));
         printf(" |- Destination Port: %d\n", ntohs(tcp_header->dest));
         printf(" |- Sequence Number (raw): %u\n", ntohl(tcp_header->seq));
@@ -291,6 +201,7 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
         printf(" |- Header Length: %d bytes (%d)\n", tcp_header->doff*4, tcp_header->doff);
         printf(" |- Flags: 0x%03x\n", tcp_header->th_flags);
         if(verbose>2){
+            //Some ternary operator to print the flags and to simplify the code (without further if condition)
             printf("     |- %s%s%s... .... = Reserved: %s\n", tcp_header->res1 & 0x80 ? "1" : "0", tcp_header->res1 & 0x40 ? "1" : "0", tcp_header->res1 & 0x20 ? "1" : "0", tcp_header->res1 & 0x10 ? "Set" : "Not set");
             printf("     |- ...%s .... .... = Accurate ECN: %s\n", tcp_header->res1 & 0x08 ? "1" : "0", tcp_header->res1 & 0x04 ? "Set" : "Not set");
             printf("     |- .... %s... .... = Congestion Window Reduced (CWR): %s\n", tcp_header->res1 & 0x02 ? "1" : "0", tcp_header->res1 & 0x02 ? "Set" : "Not set");
@@ -303,78 +214,38 @@ int print_tcpv4(const unsigned char* packet, int verbose,const struct tcphdr* tc
             printf("     |- .... .... ...%s = Fin: %s\n", tcp_header->fin ? "1" : "0", tcp_header->fin ? "Set" : "Not set");
         }
         printf(" |- Window Size: %d\n", ntohs(tcp_header->window));
-        printf(" |- Checksum: 0x%x\n", ntohs(tcp_header->check));
+        printf(" |- Checksum: 0x%x\n", ntohs(tcp_header->th_sum));
         printf(" |- Urgent Pointer: %d\n", ntohs(tcp_header->urg_ptr));
+        //If the header length is greater than 5, there are options and I print them
         if(tcp_header->doff > 5){
-            printf(" |- Options: (%ld bytes)\n", (tcp_header->doff*4)-sizeof(struct tcphdr));
-        }
-        //NB enlever l'option  dans l'appelle d'option j'y ai accès direct au dessus.
-        printf("\n");
-    }
-    //I need the options length in each verbose level so I pass it as a pointer and I put a condition on verbose in the print_option function.
-    if(tcp_header->doff > 5){
-            print_optionv4(packet, tcp_header->doff*4, options_length,verbose);
+            printf(" |- Options: (%ld bytes)\n", tcp_header->doff*4-sizeof(struct tcphdr));
+            print_option(packet, tcp_header->doff*4,verbose, version);
         }
 
-    return application;
-}
-
-int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tcp_header, uint16_t *options_length){
-    int application;
-    printf("Source Port: %d -> ", ntohs(tcp_header->source));
-    printf("Destination Port: %d\n", ntohs(tcp_header->dest));
-    application=app_value(ntohs(tcp_header->source), ntohs(tcp_header->dest));
-    
-    printf("\n");
-
-   if(verbose>1){
-        printf("Sequence Number: %d\n", ntohl(tcp_header->seq));
-        printf("Acknowledgment Number: %d\n", ntohl(tcp_header->ack_seq));
-        printf("Data Offset: %d\n", tcp_header->doff);
-        printf("Reserved: %d\n", tcp_header->res1);
-        printf("NS: %d\n", tcp_header->res2);
-        printf("Window Size: %d\n", ntohs(tcp_header->window));
-        printf("Checksum: 0x%x\n", ntohs(tcp_header->check));
-        printf("Urgent Pointer: %d\n", ntohs(tcp_header->urg_ptr));
-        printf("\n");
-    }
-
-    if(verbose>2){
-        printf("Flags: 0x%x\n", tcp_header->th_flags);
-        printf ("URG=%x, ACK=%x, PSH=%x, RST=%x, SYN=%x, FIN=%x\n", tcp_header->urg, tcp_header->ack, tcp_header->psh, tcp_header->rst, tcp_header->syn, tcp_header->fin);
-        printf("\n");
-        if(tcp_header->doff > 5){
-            printf("Options: \n");
-            print_optionv6(packet, tcp_header->doff*4, options_length,verbose);
-        }
         print_application(ntohs(tcp_header->source), ntohs(tcp_header->dest));
-        printf("\n");
-
     }
-
+    *options_length+=tcp_header->doff*4-sizeof(struct tcphdr);
     return application;
 }
+
+
 
 
 int tcp(const unsigned char* packet, int verbose, int type, uint16_t *options_length){
     int app;
     printf("Transmission Control Protocol, Src Port: ");
+    //As always, depending on the version, the offset is different and to parse perfectly the packet, I need to know the version .
     switch(type){
         case 4:
             const struct tcphdr *tcp_header = (struct tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct iphdr));
-            app=print_tcpv4(packet, verbose, tcp_header, options_length);
-            for(int i=0;i<6;i++){
-                printf("\n");
-            }
+            app=print_tcp(packet, verbose, tcp_header, options_length, type);
             break;
 
         case 6:
             const struct tcphdr *tcp_header6 = (struct tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
-            app=print_tcpv6(packet, verbose, tcp_header6, options_length);
-            for(int i=0;i<6;i++){
-                printf("\n");
-            }
+            app=print_tcp(packet, verbose, tcp_header6, options_length, type);
             break;
     }
+    printf("\n");
     return app;
 }
