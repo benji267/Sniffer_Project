@@ -57,21 +57,20 @@ int print_udp(const unsigned char* packet, int verbose, const struct udphdr *udp
 // Principal function which calls the other functions and parse the packet for the UDP layer.
 int udp(const unsigned char* packet, int verbose, int type){
     printf("User Datagram Protocol, Src Port: ");
+    int app;
     switch(type){
         case 4:
             const struct udphdr *udp_header = (struct udphdr*)(packet + sizeof(struct ether_header) + sizeof(struct iphdr));
-            int app=print_udp(packet, verbose, udp_header);
-            return app;
+            app=print_udp(packet, verbose, udp_header);
             break;
         case 6:
             udp_header = (struct udphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
-            int appv6=print_udp(packet, verbose, udp_header);
-            return appv6;
+            app=print_udp(packet, verbose, udp_header);
             break;
         default:
             printf("Unknown\n");
             break;
     }
     printf("\n");
-    return -1;
+    return app;
 }

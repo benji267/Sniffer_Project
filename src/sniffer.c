@@ -10,6 +10,7 @@
 #include "pop3.h"
 #include "dns.h"
 #include "smtp.h"
+#include "bootp.h"
 
 void example_packet(const unsigned char* packet,int verbose){
     ethernet(packet, verbose);
@@ -90,6 +91,9 @@ int main(int argc, char* argv[]){
                         switch(app){
                             case DNS:
                                 dns(packet,verbosity,4,0,1);
+                                break;
+                            case BOOTP:
+                                bootp(packet,verbosity,4);
                                 break;
                         }
                         break;
