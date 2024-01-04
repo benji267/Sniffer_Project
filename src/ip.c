@@ -63,7 +63,7 @@ void print_ipv4(int verbose, struct iphdr *ip,u_int16_t flags){
 
     if(verbose>1){
         printf(" |- 0100 .... = Version: 4\n");
-        printf(" |- .... 0101 = Header Length: 20 bytes,(5)\n");
+        printf(" |- .... 0101 = Header Length: 20 bytes (5)\n");
         printf(" |- Differentiated Services Field: 0x");
         printf("%02x", ip->tos);
         //case for the display DSCP: CS6 or CS0

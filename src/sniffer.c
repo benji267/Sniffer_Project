@@ -95,6 +95,9 @@ int main(int argc, char* argv[]){
                             case BOOTP:
                                 bootp(packet,verbosity,4);
                                 break;
+                            case DHCP:
+                                bootp(packet,verbosity,4);
+                                break;
                         }
                         break;
                     case IPPROTO_TCP:

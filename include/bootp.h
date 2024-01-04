@@ -26,6 +26,15 @@ void print_bootp_hardware(int type);
 void print_bootp_message_type(int type, int verbose);
 
 /**
+ * @brief Print the bootp options.
+ * 
+ * @param type 
+ * @param verbose 
+ * @param packet
+ */
+void print_bootp_options(int type, int verbose, const unsigned char* packet);
+
+/**
  * @brief Display the bootp header.
  * 
  * @param packet 
