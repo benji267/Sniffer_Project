@@ -7,8 +7,10 @@ void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_
         case 4:
             
             uint16_t size_telnet = ntohs(((struct iphdr*)(packet + sizeof(struct ether_header)))->tot_len) - sizeof(struct iphdr) - sizeof(struct tcphdr) - *options_length;
-
-            printf("Size of Telnet packet: %d\n",size_telnet);
+            
+            if(verbose>1){
+                printf(" |- Size of Telnet packet: %d\n",size_telnet);
+            }            
             printf("\n");
 
             if(verbose>1){
@@ -19,7 +21,7 @@ void telnet(const unsigned char* packet,int verbose, int type,uint16_t *options_
                 while(size_telnet>0){
 
                     if(*new_packetv2 == IAC){
-                        printf("IAC:\n");
+                        printf(" |- IAC: ");
                         new_packetv2++;
                         size_telnet--;
                         print_telnet_commandv2(&new_packetv2,&size_telnet);

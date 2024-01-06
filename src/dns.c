@@ -442,16 +442,16 @@ void dns_print_answers(const unsigned char* initial_packet,const unsigned char *
     print_answer(initial_packet,packet,*packet_v3,length,false);
     packet+=length;
     if(verbose==3){
-        printf("        Name: %s\n", name);
+        printf("         |- Name: %s\n", name);
         uint16_t type=*packet_v3;
-        printf("        Type: ");
+        printf("         |- Type: ");
         print_typev3(packet_v3,*packet_v3);
-        printf("        Class: ");
+        printf("         |- Class: ");
         packet_v3+=2;
         print_classv3(*packet_v3);
         packet_v3++;
         int ttl=packet_v3[0]*16777216 + packet_v3[1]*65536 + packet_v3[2]*256 + packet_v3[3];
-        printf("        Time to live: %d", ttl);
+        printf("         |- Time to live: %d", ttl);
         if(ttl>60){
             int minutes=ttl/60;
             int seconds=ttl%60;
@@ -462,9 +462,9 @@ void dns_print_answers(const unsigned char* initial_packet,const unsigned char *
         }
         packet_v3+=4;
         int data_length=packet_v3[0]*256 + packet_v3[1];
-        printf("        Data length: %d\n", data_length);
+        printf("         |- Data length: %d\n", data_length);
         packet_v3+=2;
-        printf("        ");
+        printf("         |- ");
         print_answerv3(type);
         print_answer(initial_packet,packet_v3,type,data_length,true);
     }
@@ -472,8 +472,10 @@ void dns_print_answers(const unsigned char* initial_packet,const unsigned char *
     //Now I start a loop for each answer to finish the answer section
     while(*packet!=0x00){
         if(*packet==0xc0){
+            printf("     |- ");
             return_label(initial_packet,packet[1]);
             packet+=2;
+            printf("\n");
         }
     }
 }
@@ -487,12 +489,11 @@ void dns_print_queries(const unsigned char* initial_packet,const unsigned char *
 
     if(verbose>=2){
         name=malloc(256);
-        printf("    "); 
         int i=0;
         if(!answer){
             free(name);
         }
-        printf("    ");
+        printf("     |- ");
         while(*packet!=0x00){
             if(isprint(*packet)){
                 printf("%c",*packet);
@@ -518,7 +519,7 @@ void dns_print_queries(const unsigned char* initial_packet,const unsigned char *
         packet++;
 
         if(verbose==3){
-            printf("        Name: ");
+            printf("         |- Name: ");
             int length=0;
             int label=1;
             while(*packet_v3!=0x00){
@@ -534,12 +535,12 @@ void dns_print_queries(const unsigned char* initial_packet,const unsigned char *
             }
             packet_v3++;
             printf("\n");
-            printf("        [Name Length: %d]\n", length);
-            printf("        [Label Count: %d]\n", label);
-            printf("        Type: ");
+            printf("         |- [Name Length: %d]\n", length);
+            printf("         |- [Label Count: %d]\n", label);
+            printf("         |- Type: ");
             packet_v3++;
             print_typev3(packet_v3,*packet_v3);
-            printf("        Class: ");
+            printf("         |- Class: ");
             packet_v3+=2;
             print_classv3(*packet_v3);
             packet_v3++;
@@ -548,8 +549,8 @@ void dns_print_queries(const unsigned char* initial_packet,const unsigned char *
     packet+=4;
     if(*packet==0xc0 && *(packet+1)==0x0c && answer==true){
         packet+=2;
-        printf("    Answers\n");
-        printf("        %s: ", name);
+        printf(" |- Answers\n");
+        printf("     |- %s: ", name);
         dns_print_answers(initial_packet,packet, verbose, name);
     }
 
@@ -557,8 +558,8 @@ void dns_print_queries(const unsigned char* initial_packet,const unsigned char *
 
 void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
     const unsigned char *initial_packet=packet;
-    printf("    Transaction ID: 0x%02x%02x\n", packet[0], packet[1]);
-    printf("    Flags: 0x%02x%02x", packet[2], packet[3]);
+    printf(" |- Transaction ID: 0x%02x%02x\n", packet[0], packet[1]);
+    printf(" |- Flags: 0x%02x%02x", packet[2], packet[3]);
     int flags=packet[2]*256 + packet[3];
     if(flags & 0x81){
         printf(" Standard query response, No error\n");
@@ -568,14 +569,14 @@ void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
     }
                 
     if(verbose>2){
-        printf("        %d... .... .... .... = Response: Message is a ", getQR(packet[2]));
+        printf("         |- %d... .... .... .... = Response: Message is a ", getQR(packet[2]));
         if(getQR(packet[2])==0){
             printf("query:\n");
         }
         else{
             printf("response:\n");
         }
-        printf("        .%d.. .... .... .... = Opcode: ", (packet[2] >> 3) & 0x1);
+        printf("         |- .%d.. .... .... .... = Opcode: ", (packet[2] >> 3) & 0x1);
         switch((packet[2] >> 3) & 0x1){
             case 0:
                 printf("standard query (0)\n");
@@ -601,7 +602,7 @@ void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
                 break;
         }
         if(MSB==1){
-            printf("        ..%d. .... .... .... = Authoritative: ", (packet[2] >> 2) & 0x1);
+            printf("         |- ..%d. .... .... .... = Authoritative: ", (packet[2] >> 2) & 0x1);
             if((packet[2] >> 2) & (0x1==0)){
                 printf("server is not an authority for domain\n");
                 }
@@ -609,30 +610,30 @@ void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
                 printf("server is an authority for domain\n");
             }
         }
-        printf("        ...%d .... .... .... = Truncated: ", (packet[2] >> 1) & 0x1);
+        printf("         |- ...%d .... .... .... = Truncated: ", (packet[2] >> 1) & 0x1);
         if((packet[2] >> 1) & (0x1==0)){
             printf("message is not truncated\n");
         }
         else{
             printf("message is truncated\n");
         }
-        printf("        .... %d... .... .... = Recursion desired: ", packet[2] & 0x1);
+        printf("         |- .... %d... .... .... = Recursion desired: ", packet[2] & 0x1);
         if(packet[2] & (0x1==0)){
             printf("do not query recursively\n");
         }
         else{
             printf("do query recursively\n");
         }
-        printf("        .... .%d.. .... .... = Recursion available: ", packet[3] >> 7);
+        printf("         |- .... .%d.. .... .... = Recursion available: ", packet[3] >> 7);
         if(packet[3] >> 7==0){
             printf("server can not query recursively\n");
         }
         else{
             printf("server can query recursively\n");
         }
-        printf("        .... ..%d. .... .... = Z: reserved (0)\n", (packet[3] >> 6) & 0x1);
+        printf("         |- .... ..%d. .... .... = Z: reserved (0)\n", (packet[3] >> 6) & 0x1);
         if(MSB==1){
-            printf("        .... ...%d .... .... = Answer authenticated: ", (packet[3] >> 5) & 0x1);
+            printf("         |- .... ...%d .... .... = Answer authenticated: ", (packet[3] >> 5) & 0x1);
             if((packet[3] >> 5) & (0x1==0)){
                 printf("answer/authority portion was not authenticated by the server\n");
             }
@@ -640,7 +641,7 @@ void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
                 printf("answer/authority portion was authenticated by the server\n");
             }
         }
-        printf("        .... .... %d... .... = Non-authenticated data: ", (packet[3] >> 4) & 0x1);
+        printf("         |- .... .... %d... .... = Non-authenticated data: ", (packet[3] >> 4) & 0x1);
         if((packet[3] >> 4) & (0x1==0)){
             printf("unacceptable\n");
         }
@@ -648,7 +649,7 @@ void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
             printf("acceptable\n");
         }
         if(MSB==1){
-            printf("        .... .... .%d.. .... = Reply code: ", packet[3] & 0xF); 
+            printf("         |- .... .... .%d.. .... = Reply code: ", packet[3] & 0xF); 
             switch(packet[3] & 0xF){
                 case 0:
                     printf("No error (0)\n");
@@ -704,13 +705,13 @@ void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
             }
         }
     }
-    printf("    Questions: %d\n", packet[4]*256 + packet[5]);
-    printf("    Answer RRs: %d\n", packet[6]*256 + packet[7]);
-    printf("    Authority RRs: %d\n", packet[8]*256 + packet[9]);
-    printf("    Additional RRs: %d\n", packet[10]*256 + packet[11]);
+    printf(" |- Questions: %d\n", packet[4]*256 + packet[5]);
+    printf(" |- Answer RRs: %d\n", packet[6]*256 + packet[7]);
+    printf(" |- Authority RRs: %d\n", packet[8]*256 + packet[9]);
+    printf(" |- Additional RRs: %d\n", packet[10]*256 + packet[11]);
     
 
-    printf("    Queries\n");
+    printf(" |- Queries\n");
     packet+=13;
     //I put packet in the first byte of the first query to simplify the code
     //Before I don't do that to avoid to modify the packet pointer and to underline the constant length of the header

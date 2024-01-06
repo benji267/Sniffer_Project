@@ -13,21 +13,21 @@ void http(const unsigned char* packet, int verbose, int type,uint16_t *option_le
         //I substract 3 to verbose to have the same verbose level as the other protocols.
         verbose-=3;
     }
-
-    printf("Size of HTTP packet: %d\n",size_http);
-    printf("\n");
+    if(verbose>=2){
+        printf(" |- Size of HTTP packet: %d\n",size_http);
+    }
     const unsigned char* new_packet;
     switch(type){
         case 4:
             if(verbose>=2){
+                printf(" |- ");
                 bool first_return = false;
                 new_packet = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr)+*option_length;
                 while(new_packet < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr) + size_http){
-
                     if(*new_packet == 0x0d && *(new_packet+1) == 0x0a && *(new_packet+2) == 0x0d && *(new_packet+3) == 0x0a){
                             printf("\\r\\n");
                             printf("\n");
-                            printf("\\r\\n");
+                            printf(" |- \\r\\n");
                             printf("\n");
                             new_packet+=4;
                             break;
@@ -42,6 +42,7 @@ void http(const unsigned char* packet, int verbose, int type,uint16_t *option_le
                             first_return = true;
                             break;
                         }
+                        printf(" |- ");
                         new_packet++;
                     }
                     else if(*new_packet == 0x0d){

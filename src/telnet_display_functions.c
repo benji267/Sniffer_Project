@@ -260,7 +260,7 @@ void print_telnet_option(const unsigned char** packet,bool s_end,bool suboption,
         }
         (*option)++;
         if(version==2){
-            printf("IAC:\n");
+            printf(" |- IAC: ");
             (*size_telnet)--;
         }
         if(version==2){
@@ -365,7 +365,7 @@ void print_telnet_commandv3(const unsigned char** packet){
     //boolean to know if the command is the last one and to stop the recursion
     bool s_end=false;
     bool suboption=false;
-    printf("Command: ");
+    printf("     |- Command: ");
     switch(**command){
         case SE:
             printf("Suboption End (240)\n");
@@ -435,7 +435,7 @@ void print_telnet_commandv3(const unsigned char** packet){
             
     }
     if(!s_end){
-        printf("\nSubcommand:");
+        printf("\n     |- Subcommand:");
     }
     (*command)++;
     print_telnet_option(command,s_end,suboption,NULL,3);
