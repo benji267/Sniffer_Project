@@ -32,6 +32,14 @@ void print_application(int source, int destination){
         printf(" |- ");
         printf("Following Application: SMTP\n");
     }
+    else if(source == FTP || destination==FTP){
+        printf(" |- ");
+        printf("Following Application: FTP\n");
+    }
+    else{
+        printf(" |- ");
+        printf("Following Application: Unknown\n");
+    }
     
 
     return ;
@@ -61,6 +69,9 @@ int app_value(int source, int destination){
     }
     else if(source == SMTP || destination==SMTP){
         return SMTP;
+    }
+    else if(source == FTP || destination==FTP){
+        return FTP;
     }
     
     return -1;
