@@ -30,7 +30,10 @@ To launch the project, run the following command:
 ```
 Options
 
--v value:  Sets the verbosity level of the analysis. If not specified, the default value is 1 (very concise). Different verbosity levels provide varying amounts of information, similar to Wireshark.
+-v value:  Sets the verbosity level of the analysis. If not specified, the default value is 1 (very concise). Different verbosity levels provide varying amounts of information, similar to Wireshark:
+    - 1: Very concise
+    - 2: Concise
+    - 3: Detailed
 
 -o filename: Specifies the output file for the analysis results.
 
