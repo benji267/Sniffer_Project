@@ -1,6 +1,13 @@
 #include "dns.h"
 
+//Every working but there's some problems with the label i the answer section.
+//I don't completely print the name of the name server.
+//Finally I don't have the Authority section.
 
+
+//This function is used to print the label of the DNS packet.
+//I go back to the beginning of the packet and go to the offset, th next byte is the length of the label.
+//I print the label and I go to the next label.
 void return_label(const unsigned char* packet,int label_position){
     int length=packet[label_position];
     for(int i=0;i<length;i++){
@@ -15,6 +22,7 @@ void return_label(const unsigned char* packet,int label_position){
 }
 
 
+//This function is used to print the answer section of the DNS packet with the payload.
 void print_answer(const unsigned char* initial_packet,const unsigned char* packet,uint16_t type,int data_length,bool specialisation){
     switch(type){
         case 1:
@@ -230,6 +238,7 @@ void print_answer(const unsigned char* initial_packet,const unsigned char* packe
     return ;
 }
 
+//This function is used to print the class of the DNS packet for the verbose level 3.
 void print_classv3(uint16_t class){
     switch(class){
         case 1:
@@ -253,7 +262,7 @@ void print_classv3(uint16_t class){
 }
 
 
-
+//This function is used to print the type of the DNS packet for the verbose level 3.
 void print_typev3(const unsigned char* packet,uint16_t type){
     switch(type){
         case 1:
@@ -300,6 +309,8 @@ void print_typev3(const unsigned char* packet,uint16_t type){
     return ;
 }
 
+
+//This function is used to print the class of the DNS packet for the verbose level 2.
 void print_classv2(uint16_t class){
     switch(class){
         case 1:
@@ -321,6 +332,7 @@ void print_classv2(uint16_t class){
     return ;
 }
 
+//This function is used to print the type of the DNS packet for the verbose level 2.
 void print_typev2(uint16_t type){
     switch(type){
         case 1:
@@ -372,11 +384,12 @@ void print_typev2(uint16_t type){
     return ;
 }
         
-
+//This function is used to get the MSB of the first byte of the DNS packet.
 int getQR(unsigned char byte){
     return byte >> 7;
 }
 
+//This function is used to print the answer section of the DNS packet for the verbose level 3.
 void print_answerv3(uint16_t type){
     switch(type){
         case 1:
@@ -431,6 +444,7 @@ void dns_print_answers(const unsigned char* initial_packet,const unsigned char *
     printf("type ");
     packet++;
     packet_v3++;
+    //I need to print the type and class of the answer for the verbose level 2 and 3.
     print_typev2(*packet);
     printf("class ");
     packet+=2;
@@ -442,6 +456,7 @@ void dns_print_answers(const unsigned char* initial_packet,const unsigned char *
     print_answer(initial_packet,packet,*packet_v3,length,false);
     packet+=length;
     if(verbose==3){
+        //Special Display for the verbose level 3.
         printf("         |- Name: %s\n", name);
         uint16_t type=*packet_v3;
         printf("         |- Type: ");
@@ -470,26 +485,36 @@ void dns_print_answers(const unsigned char* initial_packet,const unsigned char *
     }
 
     //Now I start a loop for each answer to finish the answer section
-    while(*packet!=0x00){
+    while(1){
+        //If the first byte of the answer is 0xc0, it means that I need to go to the label.
+        //Moreover that means that it's a name server following this label.
         if(*packet==0xc0){
+            printf("\n");
             printf("     |- ");
             return_label(initial_packet,packet[1]);
+            printf(": ");
             packet+=2;
-            printf("\n");
+            dns_print_answers(initial_packet,packet, verbose, name);
+        }
+        //I find the end of the answer section.
+        else{
+            break;
         }
     }
+    return ;
 }
 
 
 void dns_print_queries(const unsigned char* initial_packet,const unsigned char *packet, int verbose,bool answer){
     //I use packet_v3 to not modify the packet pointer and to treat the verbose level 3
     const unsigned char *packet_v3=packet;
-    //create a buffer to store the name
+    //create a buffer to store the name for the possible answer section.
     char* name;
 
     if(verbose>=2){
         name=malloc(256);
         int i=0;
+        //I use a boolean to know if I need to free the name buffer or not.
         if(!answer){
             free(name);
         }
@@ -547,6 +572,7 @@ void dns_print_queries(const unsigned char* initial_packet,const unsigned char *
         }
     }
     packet+=4;
+    //If the packet is a response, I need to ignore the name and the type and class fields.
     if(*packet==0xc0 && *(packet+1)==0x0c && answer==true){
         packet+=2;
         printf(" |- Answers\n");
@@ -557,6 +583,9 @@ void dns_print_queries(const unsigned char* initial_packet,const unsigned char *
 }
 
 void dns_print(const unsigned char *packet, int verbose,int MSB, bool answer){
+    //Get the same Display as Wireshark.
+
+    //Need the original packet to go to the the right label.
     const unsigned char *initial_packet=packet;
     printf(" |- Transaction ID: 0x%02x%02x\n", packet[0], packet[1]);
     printf(" |- Flags: 0x%02x%02x", packet[2], packet[3]);
@@ -741,6 +770,8 @@ void dns(const unsigned char *packet, int verbose,int type, uint16_t* option_len
                     printf("Unknown\n");
                     break;
             }
+            //Need to know if it's a query or a response with the MSB of the first byte of the dns packet.
+            //Need this boolean to know if I need to print the answer section or not.
             bool answ=false;
             int MSB=getQR(dns_packet[2]);
             if(MSB==0){
@@ -788,4 +819,6 @@ void dns(const unsigned char *packet, int verbose,int type, uint16_t* option_len
             printf("Unknown\n");
             break;
     }
+    printf("\n");
+    return ;
 }

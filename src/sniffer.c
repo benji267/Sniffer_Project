@@ -16,7 +16,7 @@ void example_packet(const unsigned char* packet,int verbose){
 
 int main(int argc, char* argv[]){
 
-    if(argc >5 || argc < 2){
+    if(argc >5){
         printf("Nombres d'arguments incorrects\n");
         return(1);
     }
@@ -40,6 +40,14 @@ int main(int argc, char* argv[]){
         if(strcmp(argv[i],"-v")==0){
             verbosity = atoi(argv[i+1]);
         }
+    }
+    if(verbosity==0){
+        verbosity=1;
+    }
+    
+    if(verbosity<0 || verbosity>3){
+        printf("Niveau de verbosité incorrect\n");
+        return(1);
     }
 
     pcap_t *handle;
