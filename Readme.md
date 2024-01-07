@@ -44,6 +44,12 @@ Example Usage:
 ./sniffer -v 2 -o dns.pcap
 ```
 
+
+## Makefile
+
+For detailed information on the build and compilation process, refer to the [Makefile](Makefile).
+
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.

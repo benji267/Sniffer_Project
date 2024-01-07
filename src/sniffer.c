@@ -1,5 +1,9 @@
 #include "sniffer.h"
 
+//The only thing that doesn't work sometimes is the ckecksum or the TimeStamp option in TCP.
+//It works almost evrytime but sometimes it doesn't when the packet is corrupted.
+
+
 
 //This function is used to print the information of the fake frame for the case
 //we don't have any option (-v or -i).
@@ -24,7 +28,7 @@ int main(int argc, char* argv[]){
     char *interface = NULL;
     char *offlineFile=NULL;
     //char *filter=NULL;
-    int verbosity;
+    int verbosity=0;
 
     //Parsing the arguments
     for(int i=1; i<argc; i++){
