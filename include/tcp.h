@@ -1,3 +1,6 @@
+#ifndef TCP_H
+#define TCP_H
+
 #include "ethernet.h"
 #include "ip.h"
 #include "arp.h"
@@ -94,3 +97,5 @@ int print_tcpv6(const unsigned char* packet, int verbose,const struct tcphdr* tc
  * @param options_length
  */
 int tcp(const unsigned char* packet, int verbose, int type,uint16_t *options_length);
+
+#endif

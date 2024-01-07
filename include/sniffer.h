@@ -1,10 +1,27 @@
+#ifndef SNIFFER_H
+#define SNIFFER_H
+
 #include "ethernet.h"
+#include "ip.h"
+#include "arp.h"
+#include "icmp.h"
+#include "udp.h"
+#include "tcp.h"
+#include "sctp.h"
+#include "telnet.h"
+#include "http.h"
+#include "pop3.h"
+#include "dns.h"
+#include "smtp.h"
+#include "bootp.h"
+#include "ftp.h"
 
-
+//Useful to separate the different frames in the output terminal
 void separe_trame(){
  printf("-------------------------------------------------------------------------------------------------------------------------------------\n");
 }
 
+//FakeFrame used to test the program without using the interface option or the pcap file option
 unsigned char fakeFrame[] = {
         // Ethernet Header
         0x00, 0x11, 0x22, 0x33, 0x44, 0x55, // Destination MAC
@@ -44,3 +61,5 @@ unsigned char fakeFrame[] = {
  * 
  */
 void example_packet(const unsigned char* packet, int verbose);
+
+#endif

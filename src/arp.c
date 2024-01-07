@@ -1,6 +1,6 @@
 #include "arp.h"
 
-//These files don't have difficult functions, they just display the information.
+//These files don't have difficult functions, they just display the information with the arp header.
 
 void print_hardware_type(int type){
     switch(type){

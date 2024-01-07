@@ -1,5 +1,7 @@
 #include "bootp.h"
 
+
+// Print the bootp message type.
 void print_bootp_message(int type){
     switch(type){
         case 1:
@@ -14,7 +16,7 @@ void print_bootp_message(int type){
     }
 }
 
-
+// Print the bootp hardware type.
 void print_bootp_hardware(int type){
     switch(type){
         case 1:
@@ -35,6 +37,7 @@ void print_bootp_hardware(int type){
     }
 }
 
+// Print the bootp message type depending on the verbose level to have the same display as wireshark.
 void print_bootp_message_type(int type, int verbose){
     switch(type){
         case 1:
@@ -60,6 +63,15 @@ void print_bootp_message_type(int type, int verbose){
     }
 }
 
+
+// Print the bootp options depending on the verbose level to have the same display as wireshark.
+//I check each option and print the information I can get from it.
+//Some case need to print hexadecimal values, so I use the %02x format.
+//For others, I just print the ascii value with %c.
+//I need the verbose for the right display of the information.
+//I use the packet pointer to get the information from the packet.
+//BOOTP options looks like TLV (Type, Length, Value).
+//So when I get the length, I add 1 to the pointer to get the value.
 void print_bootp_option(int type,int verbose, const unsigned char* packet){
     switch(type){
         case 1:
@@ -680,6 +692,7 @@ void bootp(const unsigned char* packet, int verbose, int type){
             packet+=sizeof(struct ether_header)+sizeof(struct ip6_hdr)+sizeof(struct udphdr);
             break;
     }
+    //Create a pointer to the beginning of the DHCP packet named after_magic_cookie to simplify the understanding of the code.
     const unsigned char* after_magic_cookie = packet;
     while(*after_magic_cookie!=0x63 && *after_magic_cookie!=0x82 && *after_magic_cookie!=0x53 && *after_magic_cookie!=0x63){
         after_magic_cookie++;
@@ -687,6 +700,7 @@ void bootp(const unsigned char* packet, int verbose, int type){
     after_magic_cookie+=6;
     print_bootp_message_type(*after_magic_cookie,1);
     printf(")\n");
+    //Print the verbose 1 as Wireshark does.
     if(verbose>1){
         printf(" |- Message type: ");
         print_bootp_message(*packet);
@@ -717,6 +731,7 @@ void bootp(const unsigned char* packet, int verbose, int type){
             printf(" (Reserved)");
         }
         printf("\n");
+        //Ternary operator to print the right value of the flags.
         if(verbose==3){
             printf("     |- %s... ....= Broadcast flag: %s\n", (*packet & 0x80)? "1":"0", (*packet & 0x80)?"Broadcast":"Unicast");
             printf("     |- .%s.. ....= Reserved flags: 0x%04x\n", (*packet & 0x40)?"1":"0", (*packet & 0x40));
@@ -740,6 +755,7 @@ void bootp(const unsigned char* packet, int verbose, int type){
             packet++;
         }
         printf("\n");
+        //If the packet==0x00, it means that the server host name is not given.
         printf(" |- Server host name: ");
         for(int i=0; i<64; i++){
             if(*packet==0x00){
@@ -751,6 +767,7 @@ void bootp(const unsigned char* packet, int verbose, int type){
             packet++;
         }
         printf("\n");
+        //If the packet==0x00, it means that the boot file name is not given.
         printf(" |- Boot file name: ");
         for(int i=0; i<128; i++){
             if(*packet==0x00){
@@ -762,6 +779,7 @@ void bootp(const unsigned char* packet, int verbose, int type){
             packet++;
         }
         printf("\n");
+        //I found the magic cookie by looking for the 0x63, 0x82, 0x53, 0x63 values.
         if(*packet== 0x63 && *(packet+1)==0x82 && *(packet+2)==0x53 && *(packet+3)==0x63){
             printf(" |- Magic cookie: DHCP\n");
             packet+=4;
@@ -774,6 +792,7 @@ void bootp(const unsigned char* packet, int verbose, int type){
             }
             printf("\n");
         }
+        //Loop to print all the options.
         while(*packet!=0xff){
             printf(" |- Option: ");
             print_bootp_option(*packet,verbose,packet);

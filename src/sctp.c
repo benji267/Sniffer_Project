@@ -1,6 +1,6 @@
 #include "sctp.h"
 
-
+//I was thinking that I have to code the SCTP protocol but I don't have to. I let this file here.
 
 void print_chunkv4(const unsigned char *packet, uint8_t offset){}
 

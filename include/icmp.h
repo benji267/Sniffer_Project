@@ -1,3 +1,6 @@
+#ifndef ICMP_H
+#define ICMP_H
+
 #include "ethernet.h"
 #include "ip.h"
 #include <netinet/ip_icmp.h>
@@ -46,3 +49,5 @@ void print_icmpv6(const unsigned char* packet, struct icmp6_hdr *icmp6_header, i
  * @param type  
  */
 void icmp(const unsigned char* packet, int verbose, int type);
+
+#endif

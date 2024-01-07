@@ -1,5 +1,7 @@
 #include "udp.h"
 
+
+//I get two functions, one to print the application protocol and one to return it for the main function.
 int udp_application(int source, int destination){
     if(source==DNS || destination==DNS){
         return DNS;
@@ -34,7 +36,7 @@ void udp_print_application(int source, int destination){
 }
 
 int print_udp(const unsigned char* packet, int verbose, const struct udphdr *udp_header){
-    
+    //I print all the information I can get from the header with the udp_header structure.
     printf("%d, ", ntohs(udp_header->source));
     printf(" Dst Port: %d\n", ntohs(udp_header->dest));
     int application_protocol = udp_application(ntohs(udp_header->source), ntohs(udp_header->dest));

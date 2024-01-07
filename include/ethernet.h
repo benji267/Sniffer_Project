@@ -1,3 +1,6 @@
+#ifndef ETHERNET_H
+#define ETHERNET_H
+
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,3 +32,5 @@ void print_type_ethernet(int type);
  */
 
 int ethernet(const unsigned char *packet, int verbose);
+
+#endif

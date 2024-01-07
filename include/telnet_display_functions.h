@@ -1,6 +1,7 @@
+#ifndef TELNET_DISPLAY_FUNCTIONS_H
+#define TELNET_DISPLAY_FUNCTIONS_H
+
 #include "telnet.h"
-
-
 
 
 /**
@@ -35,3 +36,5 @@ void print_telnet_commandv2(const unsigned char **packet,uint16_t *size_telnet);
  * 
  */
 void print_telnet_commandv3(const unsigned char **packet);
+
+#endif

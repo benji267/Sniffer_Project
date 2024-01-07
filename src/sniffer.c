@@ -1,17 +1,8 @@
 #include "sniffer.h"
-#include "ip.h"
-#include "arp.h"
-#include "icmp.h"
-#include "udp.h"
-#include "tcp.h"
-#include "sctp.h"
-#include "telnet.h"
-#include "http.h"
-#include "pop3.h"
-#include "dns.h"
-#include "smtp.h"
-#include "bootp.h"
 
+
+//This function is used to print the information of the fake frame for the case
+//we don't have any option (-v or -i).
 void example_packet(const unsigned char* packet,int verbose){
     ethernet(packet, verbose);
     ip(packet, verbose);
@@ -35,6 +26,7 @@ int main(int argc, char* argv[]){
     //char *filter=NULL;
     int verbosity;
 
+    //Parsing the arguments
     for(int i=1; i<argc; i++){
         if(strcmp(argv[i],"-i")==0){
             interface = argv[i+1];
@@ -54,6 +46,8 @@ int main(int argc, char* argv[]){
     char errbuf[PCAP_ERRBUF_SIZE];
     struct pcap_pkthdr header;
     const unsigned char *packet;
+
+    //If we have an interface, we open it.
     if(interface!=NULL){
         handle = pcap_open_live(interface, BUFSIZ, 1, 1000, errbuf);
 
@@ -62,6 +56,7 @@ int main(int argc, char* argv[]){
         return -1;
         }
     }
+    //If we have a file, we open it.
     else if(offlineFile!=NULL){
         handle = pcap_open_offline(offlineFile, errbuf);
 
@@ -71,10 +66,19 @@ int main(int argc, char* argv[]){
     }
     }
     else{
+        //If we don't have any option (-v or -i), we analyze a special packet.
         example_packet(fakeFrame,verbosity);
         return 0;
     }
 
+
+    //Principal loop to analyze the packets.
+    //I construct it as a switch case to be able to add new protocols easily.
+    //I take the choice to parse each packets independently in each protocol function.
+    //I think it's better to do that because I can have access to all the information of the packet in the main
+    //whatever the protocol is to check if a problem is detected.
+    //The only problem could be in DNS because it could be preceded by a TCP or UDP packet.
+    //But I add a parameter to the function to know if it's preceded by a TCP or UDP packet (protocol 0 or 1).
     while((packet = pcap_next(handle, &header))){
        
         switch(ethernet(packet, verbosity)){
@@ -121,7 +125,9 @@ int main(int argc, char* argv[]){
                             case SMTP:
                                 smtp(packet,verbosity,4,&options_length);
                                 break;
-
+                            case FTP:
+                                ftp(packet,verbosity,4,&options_length);
+                                break;
                             default:
                                 break;
                         }
@@ -140,7 +146,19 @@ int main(int argc, char* argv[]){
                         icmp(packet, verbosity,6);
                         break;
                     case IPPROTO_UDP:
-                        udp(packet, verbosity,6);
+                        int app;
+                        app=udp(packet, verbosity,6);
+                        switch(app){
+                            case DNS:
+                                dns(packet,verbosity,6,0,1);
+                                break;
+                            case BOOTP:
+                                bootp(packet,verbosity,6);
+                                break;
+                            case DHCP:
+                                bootp(packet,verbosity,6);
+                                break;
+                        }
                         break;
                     case IPPROTO_TCP:
                         int application;
@@ -157,9 +175,21 @@ int main(int argc, char* argv[]){
                             case POP3:
                                 pop3(packet, verbosity,6,&options_length);
                                 break;
+                            case DNS:
+                                dns(packet,verbosity,6,&options_length,0);
+                                break;
+                            case SMTP:
+                                smtp(packet,verbosity,6,&options_length);
+                                break;
+                            case FTP:
+                                ftp(packet,verbosity,6,&options_length);
+                                break;
                             default:
                                 break;
                         }
+                        break;
+                    case IPPROTO_SCTP:
+                        sctp(packet, verbosity,6);
                         break;
                     default:
                         break;
@@ -172,6 +202,7 @@ int main(int argc, char* argv[]){
                 printf("Unknown\n");
                 break;
         }
+        //I add this function to separate the different packets.
         separe_trame();
     }
     

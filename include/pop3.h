@@ -1,3 +1,6 @@
+#ifndef POP3_H
+#define POP3_H
+
 #include "tcp.h"
 #include <ctype.h>
 
@@ -11,3 +14,5 @@
  * 
  */
 void pop3(const unsigned char* packet, int verbose, int type, uint16_t *option_length);
+
+#endif

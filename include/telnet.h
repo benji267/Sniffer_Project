@@ -1,3 +1,6 @@
+#ifndef TELNET_H    
+#define TELNET_H
+
 #include "tcp.h"
 #include <ctype.h>
 #include <stdbool.h>
@@ -32,3 +35,5 @@
  * @param type 
  */
 void telnet(const unsigned char* packet, int verbose, int type,uint16_t *options_length);
+
+#endif

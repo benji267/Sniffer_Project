@@ -1,3 +1,6 @@
+#ifndef UDP_H
+#define UDP_H
+
 #include "ethernet.h"
 #include "ip.h"
 #include "arp.h"
@@ -44,3 +47,5 @@ int print_udp(const unsigned char* packet, int verbose, const struct udphdr *udp
  * @param type 
  */
 int udp(const unsigned char* packet, int verbose, int type);
+
+#endif

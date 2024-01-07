@@ -1,3 +1,6 @@
+#ifndef SCTP_H
+#define SCTP_H
+
 #include "ethernet.h"
 #include "ip.h"
 #include <netinet/sctp.h>
@@ -61,3 +64,5 @@ void print_sctpv4(const unsigned char* packet, int verbosity, const struct sctp*
  * @param   type
  */
 void sctp(const unsigned char* packet, int verbosity, int type);
+
+#endif

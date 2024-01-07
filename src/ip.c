@@ -26,6 +26,8 @@ void print_protocol_ip(int protocol){
     return ;
 }
 
+
+//The same print as in  Wireshark for the flags in level 3
 void print_flags(u_int16_t flags,int verbose){
     if(flags & IP_DF){
         printf("DF (Don't Fragment) \n");
@@ -54,7 +56,9 @@ void print_flags(u_int16_t flags,int verbose){
     return ;
 }
 
-
+//I have two functions for the print of the IPV4 and IPV6 because the structure is different
+//and I don't want to make a big function with a lot of if/else.
+//There different information in both protocol.
 void print_ipv4(int verbose, struct iphdr *ip,u_int16_t flags){
     printf("4, ");
     printf("Src: %s, ", inet_ntoa(*(struct in_addr*)&ip->saddr));
@@ -81,7 +85,7 @@ void print_ipv4(int verbose, struct iphdr *ip,u_int16_t flags){
             }
         } 
         else if(ip->tos == 0x00){
-            printf(" (DSCP: CS0,\n");
+            printf(" (DSCP: CS0,");
             if(ip->tos & 0x10){
                 printf(" ECN: CE)\n");
             }
@@ -99,6 +103,7 @@ void print_ipv4(int verbose, struct iphdr *ip,u_int16_t flags){
                 printf("     |- Unknown: %02x\n", ip->tos);
             }
         }
+        //I use the structure ip_header to display all the information of the IPV4 protocol.
         printf(" |- Total Length: %d\n", ntohs(ip->tot_len));
         printf(" |- Identification: 0x%04x\n", ntohs(ip->id));
         printf(" |- Flags:");
@@ -163,6 +168,7 @@ void print_ipv6(int verbose, struct ip6_hdr *ipv6){
                 printf("     |- Unknown: %02x\n", traffic_class);
             }
         }
+        //I use the structure ip6_header to display all the information of the IPV6 protocol.
         uint32_t flow_label = (ipv6->ip6_flow >> 8) & 0x000FFFFF;
         printf(" |- Flow Label: 0x%05x\n", flow_label);
         printf(" |- Payload Length: %d\n", ntohs(ipv6->ip6_plen));
@@ -184,6 +190,7 @@ int ip(const unsigned char* packet, int verbose){
    uint16_t version = (packet[12] << 8) | packet[13];
    int next_protocol = 0;
     printf("Internet Protocol Version "); 
+    //A switch to know if it's IPV4 or IPV6 to parse correctly the packet.
     switch(version){
         case 0x0800:
             struct iphdr *ipv4 = (struct iphdr*)(packet + sizeof(struct ether_header));

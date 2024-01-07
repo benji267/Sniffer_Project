@@ -1,3 +1,6 @@
+ #ifndef DNS_H
+#define DNS_H
+
 #include "tcp.h"	
 #include "udp.h"
 #include <ctype.h>
@@ -100,3 +103,5 @@ int getQR(const unsigned char byte);
  * 
  */
 void dns(const unsigned char *packet, int verbose,int type, uint16_t* option_length,int protocol);
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef IMAP_H
+#define IMAP_H
+
 #include "tcp.h"
 #include "ip.h"
 #include "ethernet.h"
@@ -12,3 +15,5 @@
  * @param option_length 
  */
 void imap(const unsigned char* packet, int verbose, int type, uint16_t *option_length);
+
+#endif

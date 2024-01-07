@@ -1,3 +1,6 @@
+#ifndef BOOTP_H
+#define BOOTP_H
+
 #include "udp.h"
 #include "ip.h"
 #include "ethernet.h"
@@ -42,3 +45,5 @@ void print_bootp_options(int type, int verbose, const unsigned char* packet);
  * @param type 
  */
 void bootp(const unsigned char* packet, int verbose, int type);
+
+#endif

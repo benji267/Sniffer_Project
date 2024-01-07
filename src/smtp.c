@@ -1,6 +1,7 @@
 #include "smtp.h"
 
 
+// Function to print the response code of the SMTP protocol.
 void print_response_code(int value){
     printf("<domain> ");
     switch(value){
@@ -54,8 +55,10 @@ void print_smtp(const unsigned char* packet, int verbose){
 
 
     const unsigned char* packetv3 = packet;
+    //get the response code of the SMTP protocol. 3 digits and each digits means something.
     int smtpResponseCode = (packet[0] - 48) * 100 + (packet[1] - 48) * 10 + (packet[2] - 48);
     if(verbose>=2){
+        //If the code is between 100 and 999, it's a response code. Otherwise, it's a command.
         if(smtpResponseCode >=100 && smtpResponseCode <=999){
             printf(" |- Reponse: %d", smtpResponseCode);
             packet+=3;
@@ -63,6 +66,7 @@ void print_smtp(const unsigned char* packet, int verbose){
         else{
             printf(" |- Command Line: ");
         }
+        //Print the rest of the packet following the print of the response code or the command.
         while(*packet!= 0x0d && *(packet+1)!= 0x0a && *(packet+2)!=0x32){
             if(*packet==0x0d && *(packet+1)==0x0a){
                 printf("\\r\\n");
@@ -81,6 +85,7 @@ void print_smtp(const unsigned char* packet, int verbose){
         printf("\\r\\n");
         printf("\n");
     }
+    //Same as verbose 2 but I print the response code and the response parameter.
     if(verbose==3){
         if(smtpResponseCode >=100 && smtpResponseCode <=999){
             printf("     |- Response code: ");
@@ -126,6 +131,7 @@ void print_smtp(const unsigned char* packet, int verbose){
 }
 
 void smtp(const unsigned char* packet, int verbose, int type, uint16_t *option_length){
+    //Parse the packet to the smtp payload.
     switch(type){
         case 4:
             const unsigned char* data = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr) + *option_length;

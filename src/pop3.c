@@ -3,6 +3,7 @@
 
 void pop3(const unsigned char* packet, int verbose, int type, uint16_t *option_length){
     printf("POP3 Application:\n");
+    //Only 2 verbose levels for POP3 because there is not a lot of information to display.
     if(verbose>1){
         printf(" |-");
         int i;

@@ -2,18 +2,19 @@
 
 
 void http(const unsigned char* packet, int verbose, int type,uint16_t *option_length){
-    printf("HyperText Transfer Protocol:");
+    printf("HyperText Transfer Protocol");
     printf("\n");
     uint16_t size_http = ntohs(((struct iphdr*)(packet + sizeof(struct ether_header)))->tot_len) - sizeof(struct iphdr) - sizeof(struct tcphdr) - *option_length;
 
-    //special case if we don't indicate any option, we analyze a special packet
+    //special case if we don't indicate any option (-v or -i), we analyze a special packet
     //So to differentiate this special case, i use an not usual value of verbose.
     if(verbose>=4){
         size_http=46;
-        //I substract 3 to verbose to have the same verbose level as the other protocols.
+        //I substract 3 to verbose to have the same verbose level as the other protocols because I add 3 in the main function.
         verbose-=3;
     }
     if(verbose>=2){
+        //Bonus Display the size of the HTTP packet
         printf(" |- Size of HTTP packet: %d\n",size_http);
     }
     const unsigned char* new_packet;
@@ -23,7 +24,9 @@ void http(const unsigned char* packet, int verbose, int type,uint16_t *option_le
                 printf(" |- ");
                 bool first_return = false;
                 new_packet = packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr)+*option_length;
+                //Loop until the end of the HTTP packet.
                 while(new_packet < packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct tcphdr) + size_http){
+                    //If the end marker of the HTTP packet is found, I stop the loop.
                     if(*new_packet == 0x0d && *(new_packet+1) == 0x0a && *(new_packet+2) == 0x0d && *(new_packet+3) == 0x0a){
                             printf("\\r\\n");
                             printf("\n");
@@ -33,6 +36,7 @@ void http(const unsigned char* packet, int verbose, int type,uint16_t *option_le
                             break;
                           
                     }
+                    //If I find a \r\n, I print it.
                     else if(*new_packet == 0x0d && *(new_packet+1) == 0x0a){
                         printf("\\r\\n");
                         printf("\n");
@@ -52,6 +56,7 @@ void http(const unsigned char* packet, int verbose, int type,uint16_t *option_le
                         printf("\\n");
                     }
                     else{
+                        //If the character is printable, I print it. Otherwise, I print a dot.
                         if(isprint(*new_packet)){
                             printf("%c",*new_packet);
                         }
@@ -65,7 +70,7 @@ void http(const unsigned char* packet, int verbose, int type,uint16_t *option_le
 
             }
             break;
-        
+        //Same as case 4 but I parse the packet differently because ipv6 has not the same length as ipv4.
         case 6:
            if(verbose>=2){
                 bool first_return = false;

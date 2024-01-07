@@ -1,3 +1,6 @@
+#ifndef ARP_H
+#define ARP_H
+
 #include "ethernet.h"
 #include "ip.h"
 #include <netinet/if_ether.h>
@@ -28,3 +31,5 @@ void print_arp_opcode(int opcode);
  * @param verbose 
  */
 int arp(const unsigned char *packet, int verbose);
+
+#endif

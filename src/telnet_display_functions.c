@@ -12,8 +12,18 @@
 //That's why I have a function for verbosity=2 and another one for verbosity=3.
 //The new_packet3 is just use to print the subcommand and suboption so that's why
 //print_telnet_option is different for verbosity=2 and verbosity=3.
+//the only difference is for verbose level 3 for the subotpion end, it looks like that:
+// |- IAC: Suboption X Display Location
+// |- IAC: Suboption End
+//     |- Command: Suboption (250)
+//     |- Subcommand: X Display Location
+//     |- Command: Suboption End (240)
 
 
+//I print the telnet option, but there other case. If it's a suboption end, s_end is true and I print nothing
+//and go back to the previous function.
+//If it's a suboption, suboption=true and I print the suboption and I continue to advance in the packet until the IAC marker for the suboption end.
+//Finally, I print the option and go back to the previous function.
 void print_telnet_option(const unsigned char** packet,bool s_end,bool suboption,uint16_t *size_telnet,int version){
     const unsigned char** option=packet;
     if(s_end){
@@ -263,9 +273,12 @@ void print_telnet_option(const unsigned char** packet,bool s_end,bool suboption,
             printf(" |- IAC: ");
             (*size_telnet)--;
         }
+        //I use this loop to print the information for the level 2 and 3.
+        //I print the suboption end and go back to the previous function depending on the verbosity.
         if(version==2){
             print_telnet_commandv2(option,size_telnet);
         }
+        //I print the suboption end and go back to the previous function depending on the verbosity.
         else{
             print_telnet_commandv3(option);
         }
@@ -281,7 +294,7 @@ void print_telnet_commandv2(const unsigned char** packet,uint16_t *size_telnet){
     //boolean to know if the command is the last one and to stop the recursion
     bool s_end=false;
     bool suboption=false;
-    //if suboption is true after this function, I continue to advance in the packet until the Suboption End marker.
+    //if suboption is true after this function, I continue to advance in the packet and I call the option function.
     //I make this to differentiate between the command/option and the plain text.
     switch(**command){
         case SE:
@@ -434,6 +447,7 @@ void print_telnet_commandv3(const unsigned char** packet){
             break;
             
     }
+    //I print the suboption and go to the function to print the suboption.
     if(!s_end){
         printf("\n     |- Subcommand:");
     }

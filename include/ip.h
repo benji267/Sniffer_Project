@@ -1,3 +1,6 @@
+#ifndef IP_H
+#define IP_H
+
 #include "ethernet.h"
 #include <netinet/ip6.h>
 #include <netinet/ip.h>
@@ -48,3 +51,5 @@ void print_ipv6(int verbose, struct ip6_hdr *ipv6);
  */
 
 int ip(const unsigned char* packet, int verbose);
+
+#endif

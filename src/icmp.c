@@ -191,6 +191,7 @@ void print_icmpv6(const unsigned char* packet,struct icmp6_hdr *icmp6_header, in
                 override=true;
             }
             printf("\n");
+            //All different display for the flags for the Neighbor Advertisement for verbose 3.
             if(verbose>2){  
                 printf("     |- %s... .... .... .... = Router: %s\n", router?"1":"0", router?"Set":"Not set");
                 printf("     |- .%s.. .... .... .... = Solicited: %s\n", solicited?"1":"0", solicited?"Set":"Not set");

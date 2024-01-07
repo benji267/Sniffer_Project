@@ -1,7 +1,10 @@
+#ifndef SMTP_H
+#define SMTP_H
+
 #include "tcp.h"
 #include "ip.h"
 #include "ethernet.h"
-#include "ctype.h"
+#include <ctype.h>
 #include <stdbool.h>
 
 
@@ -25,3 +28,5 @@ void print_smtp(const unsigned char* packet, int verbose);
  * 
  */
 void smtp(const unsigned char* packet, int verbose, int type, uint16_t *option_length);
+
+#endif
