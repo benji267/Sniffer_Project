@@ -52,8 +52,3 @@ Example Usage:
 ## Makefile
 
 For detailed information on the build and compilation process, refer to the [Makefile](Makefile).
-
-
-## License
-
-This project is licensed under the MIT License.
